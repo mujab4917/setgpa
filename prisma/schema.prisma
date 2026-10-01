@@ -1,0 +1,125 @@
+// -----------------------------------------------------------------------------
+// Prisma schema
+// This file is the single source of truth for the database structure.
+// After changing anything here run:  npm run db:migrate
+// -----------------------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client-js"
+  // "native" = the machine you develop on (Windows/macOS/Linux).
+  // "rhel-openssl-3.0.x" = the Linux runtime Netlify's serverless functions use.
+  // Without the second target the deployed site cannot load the Prisma engine.
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  // Used by the running website. On a hosted database (Neon, Supabase) this is
+  // the POOLED connection string, which survives many short serverless calls.
+  url = env("DATABASE_URL")
+  // Used only by the Prisma CLI for migrations. Hosted databases need the
+  // DIRECT (non-pooled) string here. Locally it is simply the same value as
+  // DATABASE_URL. scripts/netlify-build.mjs falls back to DATABASE_URL if this
+  // is not set, so the build never fails on it.
+  directUrl = env("DIRECT_URL")
+}
+
+// A Pakistani city. One city has many universities.
+// Add a new city by inserting a row here (see prisma/seed.ts).
+model City {
+  id          String  @id @default(cuid())
+  name        String // "Lahore"
+  slug        String  @unique // "lahore"  -> /universities/lahore
+  tagline     String? // one short line shown on the city card
+  description String  @db.Text // intro paragraph on the city page
+
+  // SEO (editable per city)
+  metaTitle       String?
+  metaDescription String?
+
+  // Only active cities are listed and routable. Flip to false to hide a city.
+  isActive Boolean @default(true)
+
+  universities University[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+// A university (or a specific campus of a university).
+// Every text field here is editable content - nothing is hard-coded in React.
+model University {
+  id     String @id @default(cuid())
+  cityId String
+  city   City   @relation(fields: [cityId], references: [id], onDelete: Cascade)
+
+  name             String // "FAST-NUCES Lahore"
+  shortName        String? // "FAST" - used in headings and SEO titles
+  slug             String // "fast-nuces" -> /universities/lahore/fast-nuces
+  shortDescription String  @db.Text // one or two lines, shown on the city page card
+  description      String  @db.Text // longer intro, shown on the university page
+  campus           String? // "Lahore Campus"
+  logoUrl          String? // e.g. "/logos/fast.png" (file in /public). Null -> initials placeholder
+  website          String? // official website URL
+
+  // ---- Profile details shown in the "University information" panel ----
+  establishedYear Int? // 1882
+  sector          String? // "Public" | "Private"
+  universityType  String? // "Engineering", "Medical", "General", "Business", "Agriculture"
+  notableFor      String? @db.Text // one line on what the university is known for
+
+  // ---- Grading configuration (drives the calculators) ----
+  gpaScale           Float   @default(4.0) // maximum grade point, e.g. 4.0
+  gradingSystemNotes String? @db.Text // paragraph above the grade table
+  gpaExplanation     String? @db.Text // "How GPA is calculated" paragraph
+  cgpaExplanation    String? @db.Text // "How CGPA is calculated" paragraph
+
+  // ---- SEO (editable per university) ----
+  metaTitle       String?
+  metaDescription String?
+  ogTitle         String?
+  ogDescription   String?
+
+  // ---- Data quality flags ----
+  // isVerified = false means the content is DEMO DATA and the page shows a notice.
+  // Set it to true only after you have checked the rules against official sources.
+  isVerified Boolean @default(false)
+  sourceNote String? @db.Text // e.g. "Checked against the 2025 student handbook"
+
+  isActive Boolean @default(true)
+
+  gradeRules GradeRule[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // A slug must be unique inside its city, so /universities/lahore/lums is unambiguous.
+  @@unique([cityId, slug])
+  @@index([isActive])
+}
+
+// One row of a university's grade table: "A" -> 4.00.
+// The calculators read these rows; they never contain grading logic themselves.
+model GradeRule {
+  id           String     @id @default(cuid())
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+
+  grade      String // "A", "B+", "F"
+  gradePoint Float // 4.0, 3.33, 0
+  sortOrder  Int // display order, highest grade first (0, 1, 2, ...)
+
+  // Marks range this grade covers, when the university publishes one.
+  // e.g. B+ = 75 to 80. Both null when the range is not known - the grade
+  // table then simply omits the percentage column.
+  minPercentage Float?
+  maxPercentage Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([universityId, grade])
+  @@index([universityId, sortOrder])
+}
