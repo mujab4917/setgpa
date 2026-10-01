@@ -30,6 +30,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@netlify/database": "^2.0.1",
     "@prisma/client": "^6.5.0",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.1",

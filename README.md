@@ -319,16 +319,17 @@ page 14"). The amber demo-data banner is replaced by the source line.
 
 Nothing else changes — no code references the database host directly.
 
-## Deployment (Netlify + hosted PostgreSQL)
+## Deployment (Netlify + Netlify Database)
 
-The site deploys to Netlify from this GitHub repository, and the domain is
-`setgpa.com`. All deployment configuration is in Git:
+The site, its PostgreSQL database (Netlify Database) and the domain
+`setgpa.com` are all on Netlify, deployed from this GitHub repository. All
+deployment configuration is in Git:
 
 - `netlify.toml` — build command, Node version, `www` redirect, security headers.
 - `scripts/netlify-build.mjs` — on every deploy: generates the Prisma client,
   applies new migrations, seeds an **empty** database once, then builds the site.
 
-One-time setup (hosted database, connecting the repository, environment
+One-time setup (connecting the repository, adding the database, two contact
 variables, the domain) is in [`docs/DEPLOY-NETLIFY.md`](docs/DEPLOY-NETLIFY.md).
 After that, every push to `main` deploys automatically.
 
