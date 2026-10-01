@@ -1,0 +1,51 @@
+# =============================================================================
+# Netlify configuration for SetGPA  ->  https://setgpa.com
+#
+# Netlify reads this file from the GitHub repository on every deploy, so the
+# whole deployment setup lives in Git. Nothing needs to be configured by hand
+# in the Netlify dashboard except the environment variables listed in
+# docs/DEPLOY-NETLIFY.md (database connection and contact details).
+#
+# Next.js: Netlify detects Next.js automatically and runs it with its built-in
+# runtime (server rendering, incremental regeneration, image optimisation).
+# No plugin line and no publish directory are needed.
+# =============================================================================
+
+[build]
+  # Generates the database client, applies migrations, seeds an empty database
+  # once, then runs `next build`. See scripts/netlify-build.mjs.
+  command = "node scripts/netlify-build.mjs"
+
+[build.environment]
+  # Node.js version used for the build and for the site's functions.
+  NODE_VERSION = "22"
+  # The public address of the site. Used for canonical URLs, sitemap.xml and
+  # social share images. This is public information, so it is safe in Git.
+  NEXT_PUBLIC_SITE_URL = "https://setgpa.com"
+  # Turn off Next.js anonymous usage reporting during builds.
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# -----------------------------------------------------------------------------
+# One canonical address: www.setgpa.com permanently redirects to setgpa.com, so
+# search engines see a single version of every page (important for SEO).
+# -----------------------------------------------------------------------------
+[[redirects]]
+  from = "https://www.setgpa.com/*"
+  to = "https://setgpa.com/:splat"
+  status = 301
+  force = true
+
+# -----------------------------------------------------------------------------
+# Security headers sent with every page.
+# -----------------------------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Stops browsers guessing a file's type (blocks a class of injection attacks).
+    X-Content-Type-Options = "nosniff"
+    # Only send the site's address, not the full page URL, to other websites.
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    # Prevents other websites from embedding SetGPA inside a frame.
+    X-Frame-Options = "SAMEORIGIN"
+    # SetGPA needs no camera, microphone or location access.
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
