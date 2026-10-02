@@ -15,12 +15,12 @@
  */
 export const navContent = {
   links: [
-    { label: "Home", href: "/" },
-    { label: "Cities", href: "/cities" },
-    { label: "Guides", href: "/guides" },
-    { label: "Target GPA", href: "/target-gpa-calculator" },
-    { label: "About", href: "/about" },
-    { label: "Contact", href: "/contact" },
+    { label: "Home", href: "/", hint: "GPA and CGPA calculators" },
+    { label: "Cities", href: "/cities", hint: "Find your university" },
+    { label: "Guides", href: "/guides", hint: "Formulas and worked examples" },
+    { label: "Target GPA", href: "/target-gpa-calculator", hint: "Plan the grades you need" },
+    { label: "About", href: "/about", hint: "How SetGPA works" },
+    { label: "Contact", href: "/contact", hint: "Add or fix a university" },
   ],
   /** Label on the WhatsApp button in the header. */
   ctaLabel: "WhatsApp",

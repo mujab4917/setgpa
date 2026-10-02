@@ -95,7 +95,7 @@ export function SiteHeader() {
             </a>
           )}
 
-          <MobileMenu />
+          <MobileMenu whatsappHref={whatsappHref} />
         </div>
       </Container>
     </header>
