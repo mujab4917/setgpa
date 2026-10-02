@@ -1,5 +1,8 @@
 import { ImageResponse } from "next/og";
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import {
   getAllUniversityPaths,
   getUniversityBySlug,
@@ -18,8 +21,11 @@ import { siteConfig } from "@/lib/site-config";
  * generated at build time alongside the page, so it costs nothing per request.
  */
 
-export const alt = "University GPA and CGPA calculator";
+export const alt = "University GPA and CGPA calculator on SetGPA";
 export const size = { width: 1200, height: 630 };
+
+/** The white SetGPA logo (public/logo-light.png), embedded so the image needs no network access. */
+const LOGO_DATA_URL = `data:image/png;base64,${readFileSync(join(process.cwd(), "public", "logo-light.png")).toString("base64")}`;
 export const contentType = "image/png";
 
 /**
@@ -60,27 +66,8 @@ export default async function OpengraphImage({
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "64px",
-              height: "64px",
-              borderRadius: "16px",
-              backgroundColor: "#3a7459",
-              color: "#ffffff",
-              fontSize: "28px",
-              fontWeight: 700,
-            }}
-          >
-            PK
-          </div>
-          <div style={{ display: "flex", color: "#94a3b8", fontSize: "28px" }}>
-            {siteConfig.name}
-          </div>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={LOGO_DATA_URL} alt={siteConfig.name} width={300} height={69} />
 
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div

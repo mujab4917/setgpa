@@ -2,7 +2,8 @@ import { TargetGpaTeaser } from "@/components/calculators/TargetGpaTeaser";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { webApplicationJsonLd } from "@/lib/seo/schema";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbJsonLd, universityJsonLd, webPageJsonLd } from "@/lib/seo/schema";
 
 import { UniversityCalculator } from "@/components/calculators/UniversityCalculator";
 import { WhatsAppContact } from "@/components/feedback/WhatsAppContact";
@@ -103,65 +104,30 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
   // Questions generated from this university's own data (lib/seo/faq.ts).
   const faqItems = buildUniversityFaq(university);
 
-  // Breadcrumb structured data helps Google show the path in search results.
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: absoluteUrl(routes.home()),
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: university.city.name,
-        item: absoluteUrl(cityUrl),
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: university.name,
-        item: absolutePageUrl,
-      },
-    ],
-  };
-
-  // FAQPage structured data, built from the same array the page renders.
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqItems.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: { "@type": "Answer", text: item.answer },
-    })),
-  };
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        // Static, server-generated JSON - no user input goes in here.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      <JsonLd
+        data={webPageJsonLd({
+          name: `${university.name} GPA & CGPA Calculator`,
+          description: `Free GPA calculator and CGPA calculator for ${university.name}, built on its ${university.gpaScale.toFixed(2)}-point grade table.`,
+          path: pageUrl,
+        })}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      <JsonLd
+        data={universityJsonLd({
+          name: university.name,
+          shortName: university.shortName,
+          city: university.city.name,
+          website: university.website,
+          pagePath: pageUrl,
+        })}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            webApplicationJsonLd({
-              name: `${university.shortName ?? university.name} GPA & CGPA Calculator`,
-              path: pageUrl,
-              description: `Free GPA calculator and CGPA calculator for ${university.name}, built on its ${university.gpaScale.toFixed(2)}-point grade table.`,
-            }),
-          ),
-        }}
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: routes.home() },
+          { name: university.city.name, path: cityUrl },
+          { name: university.name, path: pageUrl },
+        ])}
       />
 
       <PageHero

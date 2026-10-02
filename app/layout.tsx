@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 
 import "./globals.css";
@@ -48,7 +48,30 @@ export const metadata: Metadata = {
   },
   description: siteConfig.defaultMetaDescription,
   applicationName: siteConfig.name,
-  robots: { index: true, follow: true },
+  category: "education",
+  // Only the real site (setgpa.com) may be indexed. Netlify deploy previews and
+  // branch deploys get "noindex", so Google never lists a half-finished copy.
+  // The googleBot values allow full-size image previews and long snippets.
+  robots: {
+    index: siteConfig.indexable,
+    follow: siteConfig.indexable,
+    googleBot: {
+      index: siteConfig.indexable,
+      follow: siteConfig.indexable,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  // Stops phones from turning numbers like 3.67 into phone-number links.
+  formatDetection: { telephone: false, email: false, address: false },
+};
+
+/** Browser address-bar colour on phones: the brand green. */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#3a7459",
 };
 
 export default function RootLayout({

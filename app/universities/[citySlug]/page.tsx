@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { breadcrumbJsonLd } from "@/lib/seo/schema";
 
 import { WhatsAppContact } from "@/components/feedback/WhatsAppContact";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/layout/PageHero";
 import { Container } from "@/components/ui/Container";
 import { UniversityList } from "@/components/universities/UniversityList";
@@ -88,18 +89,11 @@ export default async function CityPage({ params }: CityPageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            breadcrumbJsonLd([
+      <JsonLd data={breadcrumbJsonLd([
               { name: "Home", path: routes.home() },
               { name: citiesPageContent.heading, path: routes.cities() },
               { name: city.name, path: routes.city(city.slug) },
-            ]),
-          ),
-        }}
-      />
+            ])} />
       <PageHero
         title={heading}
         description={city.tagline ?? `Find your university in ${city.name} and start calculating.`}

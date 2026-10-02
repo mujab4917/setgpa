@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { CityDirectory } from "@/components/cities/CityDirectory";
 import { WhatsAppContact } from "@/components/feedback/WhatsAppContact";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/layout/PageHero";
 import { Container } from "@/components/ui/Container";
 import { citiesPageContent, footerContent } from "@/data/site-content";
@@ -34,17 +35,10 @@ export default async function CitiesPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            breadcrumbJsonLd([
+      <JsonLd data={breadcrumbJsonLd([
               { name: "Home", path: routes.home() },
               { name: citiesPageContent.heading, path: routes.cities() },
-            ]),
-          ),
-        }}
-      />
+            ])} />
       <PageHero
         compact
         title={citiesPageContent.heading}

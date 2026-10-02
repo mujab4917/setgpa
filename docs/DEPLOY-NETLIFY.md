@@ -76,7 +76,11 @@ You bought `setgpa.com` through Netlify, so DNS is already managed there:
 ### 4. Tell Google about the site
 
 1. Add `https://setgpa.com` as a property in Google Search Console.
-2. Submit `https://setgpa.com/sitemap.xml`.
+2. Submit `https://setgpa.com/sitemap.xml` (the index of all sitemaps).
+
+Everything else search engines read, such as robots.txt, social share images,
+favicons and structured data, is described in
+[`docs/SEO-AND-BRANDING.md`](SEO-AND-BRANDING.md).
 
 ---
 

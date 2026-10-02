@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -66,27 +67,15 @@ export function SiteHeader() {
         }`}
       >
         {/* ---------- Logo ---------- */}
-        <Link href="/" className="group flex shrink-0 items-center gap-3">
-          <span
-            aria-hidden="true"
-            className={`flex shrink-0 items-center justify-center rounded-lg bg-ink-900 font-[family-name:var(--font-display)] font-extrabold text-marker-300 transition-transform duration-300 group-hover:-rotate-6 ${
-              scrolled ? "h-9 w-9 text-xs" : "h-10 w-10 text-sm"
-            }`}
-          >
-            SG
-          </span>
-          <span className="leading-tight">
-            <span className="block text-base font-bold text-ink-900">
-              {siteConfig.name}
-            </span>
-            <span
-              className={`hidden overflow-hidden text-xs text-ink-700 transition-all duration-300 xl:block ${
-                scrolled ? "max-h-0 opacity-0" : "max-h-5 opacity-100"
-              }`}
-            >
-              {siteConfig.tagline}
-            </span>
-          </span>
+        <Link href="/" aria-label={`${siteConfig.name} home`} className="flex shrink-0 items-center">
+          <Image
+            src="/logo.png"
+            alt={siteConfig.name}
+            width={1200}
+            height={277}
+            priority
+            className={`w-auto transition-[height] duration-300 ${scrolled ? "h-7 sm:h-8" : "h-8 sm:h-9"}`}
+          />
         </Link>
 
         {/* ---------- Nav (lg+) ---------- */}

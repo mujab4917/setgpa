@@ -40,6 +40,14 @@ export const siteConfig = {
    */
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
 
+  /**
+   * Whether search engines may index this build. Netlify sets CONTEXT to
+   * "production" for the live site and to "deploy-preview" / "branch-deploy"
+   * for test copies. Outside Netlify (local development) CONTEXT is unset and
+   * the site counts as indexable, which has no effect because it is not public.
+   */
+  indexable: (process.env.CONTEXT ?? "production") === "production",
+
   /** Language used in the <html lang> attribute. */
   locale: "en_PK",
 } as const;

@@ -18,7 +18,8 @@ import { UniversityFaq } from "@/components/universities/UniversityFaq";
 import { homeFaq } from "@/data/guides";
 import { homeContent, targetPlannerPageContent, universityPageContent } from "@/data/site-content";
 import { siteConfig } from "@/lib/site-config";
-import { organizationJsonLd, webApplicationJsonLd, websiteJsonLd } from "@/lib/seo/schema";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { organizationJsonLd, webPageJsonLd, websiteJsonLd } from "@/lib/seo/schema";
 import { cityPhotos, pickUniversitiesWithPhotos } from "@/data/place-photos";
 import { getActiveCities } from "@/lib/queries/cities";
 import { getAllUniversitiesForSearch } from "@/lib/queries/universities";
@@ -84,21 +85,17 @@ export default async function HomePage() {
   const structuredData = [
     organizationJsonLd(),
     websiteJsonLd(),
-    webApplicationJsonLd({
-      name: `${siteConfig.name}: GPA & CGPA Calculator for Pakistan`,
-      path: routes.home(),
+    webPageJsonLd({
+      name: siteConfig.defaultMetaTitle,
       description: siteConfig.defaultMetaDescription,
+      path: routes.home(),
     }),
   ];
 
   return (
     <>
       {structuredData.map((data) => (
-        <script
-          key={data["@type"]}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-        />
+        <JsonLd key={String(data["@type"])} data={data} />
       ))}
 
       {/* ---------- Hero ---------- */}

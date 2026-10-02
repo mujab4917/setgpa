@@ -11,7 +11,9 @@ import { footerContent, targetPlannerPageContent } from "@/data/site-content";
 import { calculateTargetGpa } from "@/lib/calculators/target";
 import { getAllUniversitiesForSearch, getAllUniversitiesWithGrading } from "@/lib/queries/universities";
 import { routes } from "@/lib/routes";
-import { absoluteUrl, buildPageMetadata } from "@/lib/seo/metadata";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import { breadcrumbJsonLd, webPageJsonLd } from "@/lib/seo/schema";
 import { generalFeedbackMessage } from "@/lib/whatsapp";
 
 /**
@@ -65,39 +67,20 @@ export default async function TargetGpaCalculatorPage({ searchParams }: TargetGp
 
   const pageUrl = routes.targetPlanner();
 
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: absoluteUrl(routes.home()) },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: targetPlannerPageContent.heading,
-        item: absoluteUrl(pageUrl),
-      },
-    ],
-  };
-
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: targetPlannerPageContent.faq.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: { "@type": "Answer", text: item.answer },
-    })),
-  };
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      <JsonLd
+        data={webPageJsonLd({
+          name: targetPlannerPageContent.heading,
+          description: targetPlannerPageContent.metaDescription,
+          path: pageUrl,
+        })}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: routes.home() },
+          { name: targetPlannerPageContent.heading, path: pageUrl },
+        ])}
       />
 
       <PageHero

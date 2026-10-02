@@ -73,7 +73,31 @@ export async function getCityBySlug(slug: string): Promise<CityDetail | null> {
   return city;
 }
 
-/** Slugs of every active city - used by generateStaticParams and sitemap.ts. */
+/**
+ * Every active city with the date its page last changed, for the sitemap.
+ * A city page changes when the city OR any of its universities changes (the
+ * page lists them), so the date is the latest of those.
+ */
+export async function getCitySitemapEntries(): Promise<Array<{ slug: string; updatedAt: Date }>> {
+  const cities = await prisma.city.findMany({
+    where: { isActive: true },
+    orderBy: { slug: "asc" },
+    select: {
+      slug: true,
+      updatedAt: true,
+      universities: { where: { isActive: true }, select: { updatedAt: true } },
+    },
+  });
+
+  return cities.map((city) => ({
+    slug: city.slug,
+    updatedAt: new Date(
+      Math.max(city.updatedAt.getTime(), ...city.universities.map((u) => u.updatedAt.getTime())),
+    ),
+  }));
+}
+
+/** Slugs of every active city - used by generateStaticParams. */
 export async function getActiveCitySlugs(): Promise<string[]> {
   const cities = await prisma.city.findMany({
     where: { isActive: true },

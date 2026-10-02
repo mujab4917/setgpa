@@ -34,6 +34,9 @@ export const DESCRIPTION_MAX = 155;
 
 /** Turns "/universities/lahore" into "https://example.com/universities/lahore". */
 export function absoluteUrl(path: string): string {
+  // The homepage is always "https://setgpa.com" (no trailing slash), so the
+  // canonical tag, Open Graph URL, sitemap and structured data all agree.
+  if (path === "/" || path === "") return siteConfig.url;
   return `${siteConfig.url}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
@@ -67,7 +70,22 @@ interface PageMetadataInput {
   /** Set false when the title already contains the brand (the homepage). */
   brand?: boolean;
   type?: "website" | "article";
+  /**
+   * Set false to leave the share image to the page itself. University pages do
+   * this because each one has its own generated image
+   * (app/universities/[citySlug]/[universitySlug]/opengraph-image.tsx).
+   */
+  defaultImage?: boolean;
 }
+
+/** The default share image: 1200 x 630, made by scripts/generate-brand-assets.mjs. */
+export const SHARE_IMAGE = {
+  url: "/og-image.png",
+  width: 1200,
+  height: 630,
+  type: "image/png",
+  alt: "SetGPA: GPA and CGPA calculator for Pakistani universities. Your university's own grade table, free, no account.",
+} as const;
 
 /** Shared builder: canonical URL + Open Graph + Twitter card. */
 export function buildPageMetadata({
@@ -78,6 +96,7 @@ export function buildPageMetadata({
   ogDescription,
   brand = true,
   type = "website",
+  defaultImage = true,
 }: PageMetadataInput): Metadata {
   const url = absoluteUrl(path);
   const finalTitle = fitTitle(title, brand);
@@ -97,11 +116,13 @@ export function buildPageMetadata({
       siteName: siteConfig.name,
       locale: siteConfig.locale,
       type,
+      ...(defaultImage ? { images: [SHARE_IMAGE] } : {}),
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: socialTitle,
       description: socialDescription,
+      ...(defaultImage ? { images: [{ url: SHARE_IMAGE.url, alt: SHARE_IMAGE.alt }] } : {}),
     },
   };
 }
@@ -157,5 +178,6 @@ export function buildUniversityMetadata(university: UniversityDetail): Metadata 
     description,
     path: routes.university(university.city.slug, university.slug),
     ogTitle: `${label} GPA & CGPA Calculator`,
+    defaultImage: false,
   });
 }

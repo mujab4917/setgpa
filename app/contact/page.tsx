@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/PageHero";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { SocialLinks } from "@/components/layout/SocialLinks";
 import { Container } from "@/components/ui/Container";
 import { MailIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { contactContent, footerContent } from "@/data/site-content";
 import { routes } from "@/lib/routes";
 import { buildPageMetadata } from "@/lib/seo/metadata";
+import { webPageJsonLd } from "@/lib/seo/schema";
 import { siteConfig } from "@/lib/site-config";
 import { buildWhatsAppLink, generalFeedbackMessage } from "@/lib/whatsapp";
 
@@ -44,6 +46,14 @@ export default function ContactPage() {
 
   return (
     <>
+      <JsonLd
+        data={webPageJsonLd({
+          type: "ContactPage",
+          name: contactContent.heading,
+          description: contactContent.metaDescription,
+          path: routes.contact(),
+        })}
+      />
       <PageHero
         compact
         title={contactContent.heading}

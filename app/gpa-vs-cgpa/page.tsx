@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { GuideCta, GuideFormula, GuideSection, GuideTable, GuideToc } from "@/components/guides/GuideParts";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/layout/PageHero";
 import { Container } from "@/components/ui/Container";
 import { UniversityFaq } from "@/components/universities/UniversityFaq";
@@ -45,31 +46,17 @@ export default function GpaVsCgpaPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            articleJsonLd({
+      <JsonLd data={articleJsonLd({
               headline: "GPA vs CGPA: what is the difference?",
               description: DESCRIPTION,
               path: routes.gpaVsCgpa(),
               datePublished: GUIDE_PUBLISHED,
               dateModified: GUIDE_UPDATED,
-            }),
-          ),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            breadcrumbJsonLd([
+            })} />
+      <JsonLd data={breadcrumbJsonLd([
               { name: "Home", path: routes.home() },
               { name: "GPA vs CGPA", path: routes.gpaVsCgpa() },
-            ]),
-          ),
-        }}
-      />
+            ])} />
 
       <PageHero
         title="GPA vs CGPA: what is the difference?"

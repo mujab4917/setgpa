@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { PageHero } from "@/components/layout/PageHero";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Container } from "@/components/ui/Container";
 import { MailIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { aboutContent, footerContent } from "@/data/site-content";
@@ -8,6 +9,7 @@ import { getActiveCities } from "@/lib/queries/cities";
 import { getAllUniversitiesForSearch } from "@/lib/queries/universities";
 import { routes } from "@/lib/routes";
 import { buildPageMetadata } from "@/lib/seo/metadata";
+import { webPageJsonLd } from "@/lib/seo/schema";
 import { siteConfig } from "@/lib/site-config";
 import { buildWhatsAppLink, generalFeedbackMessage } from "@/lib/whatsapp";
 
@@ -50,6 +52,14 @@ export default async function AboutPage() {
 
   return (
     <>
+      <JsonLd
+        data={webPageJsonLd({
+          type: "AboutPage",
+          name: aboutContent.heading,
+          description: aboutContent.metaDescription,
+          path: routes.about(),
+        })}
+      />
       <PageHero
         compact
         title={aboutContent.heading}

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { SocialLinks } from "@/components/layout/SocialLinks";
@@ -19,17 +20,13 @@ export function SiteFooter() {
       <Container className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 sm:gap-10 sm:py-12 lg:grid-cols-4">
         {/* ---------- Brand ---------- */}
         <div className="col-span-2 lg:col-span-1">
-          <div className="flex items-center gap-3">
-            <span
-              aria-hidden="true"
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-marker-300 font-[family-name:var(--font-display)] text-sm font-extrabold text-ink-900"
-            >
-              SG
-            </span>
-            <span className="text-base font-bold text-white">
-              {siteConfig.name}
-            </span>
-          </div>
+          <Image
+            src="/logo-light.png"
+            alt={siteConfig.name}
+            width={1200}
+            height={277}
+            className="h-9 w-auto"
+          />
 
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/65">
             {footerContent.description}

@@ -1,0 +1,180 @@
+/**
+ * Generates every brand image SetGPA needs from ONE source file.
+ *
+ * Source:  brand/setgpa-logo-source.webp   (the full logo, transparent background)
+ * Run:     node scripts/generate-brand-assets.mjs
+ *
+ * Output (all committed to Git, so a deploy never has to run this):
+ *   public/logo.png            full logo, dark text   -> header, light backgrounds
+ *   public/logo-light.png      full logo, white text  -> footer, dark backgrounds
+ *   public/logo-square.png     512x512 mark on white  -> Organization "logo" in structured data
+ *   public/icon-192.png        app icon               -> web app manifest
+ *   public/icon-512.png        app icon               -> web app manifest
+ *   app/favicon.ico            16, 32 and 48 px       -> browser tabs
+ *   app/icon.png               512 px                 -> modern favicon
+ *   app/apple-icon.png         180 px                 -> iPhone / iPad home screen
+ *   public/og-image.png        1200x630               -> link previews (WhatsApp, Facebook, LinkedIn, X)
+ *
+ * Next.js finds the favicon and icon files in app/ by their names and adds the
+ * right <link> tags automatically. The share image is referenced explicitly by
+ * lib/seo/metadata.ts (/og-image.png), so every page gets it.
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import sharp from "sharp";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const SOURCE = path.join(ROOT, "brand", "setgpa-logo-source.webp");
+
+// Brand colours (same as the website's design tokens).
+const TILE = "#eaf3ee"; // favicon tile: soft sage
+const INK = "#1f2e29";
+const PAPER_FROM = "#e9f3ee";
+const PAPER_TO = "#cfe3d8";
+
+const out = (...p) => path.join(ROOT, ...p);
+const write = (file, buffer) => {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, buffer);
+  console.log("wrote", path.relative(ROOT, file), `(${(buffer.length / 1024).toFixed(1)} KB)`);
+};
+
+/** Recolours a transparent logo: dark pixels -> white, green pixels -> light mint. */
+async function recolourForDark(png) {
+  const { data, info } = await sharp(png).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] === 0) continue;
+    const luminance = data[i] * 0.3 + data[i + 1] * 0.59 + data[i + 2] * 0.11;
+    const [r, g, b] = luminance < 70 ? [255, 255, 255] : [159, 211, 183];
+    data[i] = r;
+    data[i + 1] = g;
+    data[i + 2] = b;
+  }
+  return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
+}
+
+/** Packs PNG images into a .ico file (PNG-in-ICO, supported by every modern browser). */
+function buildIco(images) {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(images.length, 4);
+
+  let offset = 6 + images.length * 16;
+  const entries = images.map(({ size, buffer }) => {
+    const entry = Buffer.alloc(16);
+    entry.writeUInt8(size >= 256 ? 0 : size, 0);
+    entry.writeUInt8(size >= 256 ? 0 : size, 1);
+    entry.writeUInt8(0, 2);
+    entry.writeUInt8(0, 3);
+    entry.writeUInt16LE(1, 4);
+    entry.writeUInt16LE(32, 6);
+    entry.writeUInt32LE(buffer.length, 8);
+    entry.writeUInt32LE(offset, 12);
+    offset += buffer.length;
+    return entry;
+  });
+  return Buffer.concat([header, ...entries, ...images.map((i) => i.buffer)]);
+}
+
+/** A rounded-square tile with the logo mark centred on it. */
+async function tile(mark, size, { rounded }) {
+  const radius = rounded ? Math.round(size * 0.22) : 0;
+  const background = Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${radius}" fill="${TILE}"/></svg>`,
+  );
+  const inner = Math.round(size * 0.72);
+  const markPng = await sharp(mark).resize({ width: inner, height: inner, fit: "inside" }).png().toBuffer();
+  return sharp(background).composite([{ input: markPng, gravity: "centre" }]).png().toBuffer();
+}
+
+async function main() {
+  if (!fs.existsSync(SOURCE)) throw new Error(`Missing ${SOURCE}`);
+
+  // ---- Full logo, trimmed to its visible pixels ----
+  const trimmed = await sharp(SOURCE).trim({ threshold: 1 }).png().toBuffer();
+  const logo = await sharp(trimmed).resize({ width: 1200 }).png({ compressionLevel: 9 }).toBuffer();
+  write(out("public", "logo.png"), logo);
+  const logoLight = await recolourForDark(logo);
+  write(out("public", "logo-light.png"), logoLight);
+
+  // ---- The book-and-arrow mark on its own (the left part of the source) ----
+  const meta = await sharp(SOURCE).metadata();
+  // Two separate steps: sharp trims before it crops when both are chained.
+  const markArea = await sharp(SOURCE)
+    .extract({ left: 80, top: 90, width: 540, height: Math.min(470, meta.height - 90) })
+    .png()
+    .toBuffer();
+  const markCrop = await sharp(markArea).trim({ threshold: 1 }).png().toBuffer();
+
+  // Square logo for structured data: mark on white with breathing room.
+  const squareInner = await sharp(markCrop).resize({ width: 380, height: 380, fit: "inside" }).png().toBuffer();
+  const square = await sharp({ create: { width: 512, height: 512, channels: 4, background: "#ffffff" } })
+    .composite([{ input: squareInner, gravity: "centre" }])
+    .png()
+    .toBuffer();
+  write(out("public", "logo-square.png"), square);
+
+  // ---- Favicons and app icons ----
+  const icon512 = await tile(markCrop, 512, { rounded: true });
+  const icon192 = await sharp(icon512).resize(192, 192).png().toBuffer();
+  const apple180 = await tile(markCrop, 180, { rounded: false });
+  write(out("app", "icon.png"), icon512);
+  write(out("app", "apple-icon.png"), apple180);
+  write(out("public", "icon-192.png"), icon192);
+  write(out("public", "icon-512.png"), icon512);
+
+  const icoImages = [];
+  for (const size of [16, 32, 48]) {
+    icoImages.push({ size, buffer: await sharp(icon512).resize(size, size).png().toBuffer() });
+  }
+  write(out("app", "favicon.ico"), buildIco(icoImages));
+
+  // ---- Social share image, 1200 x 630 ----
+  const W = 1200;
+  const H = 630;
+  const logoForOg = await sharp(trimmed).resize({ width: 760 }).png().toBuffer();
+  const logoMeta = await sharp(logoForOg).metadata();
+  const logoTop = 150;
+
+  const gridLines = [];
+  for (let x = 0; x <= W; x += 40) gridLines.push(`<line x1="${x}" y1="0" x2="${x}" y2="${H}"/>`);
+  for (let y = 0; y <= H; y += 40) gridLines.push(`<line x1="0" y1="${y}" x2="${W}" y2="${y}"/>`);
+
+  const background = Buffer.from(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="${PAPER_FROM}"/>
+          <stop offset="1" stop-color="${PAPER_TO}"/>
+        </linearGradient>
+      </defs>
+      <rect width="${W}" height="${H}" fill="url(#bg)"/>
+      <g stroke="#3a7459" stroke-opacity="0.10" stroke-width="1">${gridLines.join("")}</g>
+      <text x="${W / 2}" y="${logoTop + (logoMeta.height ?? 250) + 92}" text-anchor="middle"
+            font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700" fill="${INK}">
+        GPA and CGPA calculator for Pakistani universities
+      </text>
+      <text x="${W / 2}" y="${logoTop + (logoMeta.height ?? 250) + 150}" text-anchor="middle"
+            font-family="Arial, Helvetica, sans-serif" font-size="30" fill="#41544c">
+        Your university's own grade table. Free, no account.
+      </text>
+      <text x="${W / 2}" y="${H - 38}" text-anchor="middle"
+            font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#3a7459">
+        setgpa.com
+      </text>
+    </svg>`);
+
+  const og = await sharp(background)
+    .composite([{ input: logoForOg, left: Math.round((W - 760) / 2), top: logoTop }])
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  write(out("public", "og-image.png"), og);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

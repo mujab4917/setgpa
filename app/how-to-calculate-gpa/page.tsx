@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { GuideCta, GuideFormula, GuideSection, GuideTable, GuideToc } from "@/components/guides/GuideParts";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { PageHero } from "@/components/layout/PageHero";
 import { Container } from "@/components/ui/Container";
 import { UniversityFaq } from "@/components/universities/UniversityFaq";
@@ -50,31 +51,17 @@ export default function HowToCalculateGpaPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            articleJsonLd({
+      <JsonLd data={articleJsonLd({
               headline: "How to calculate GPA and CGPA",
               description: DESCRIPTION,
               path: routes.howToCalculateGpa(),
               datePublished: GUIDE_PUBLISHED,
               dateModified: GUIDE_UPDATED,
-            }),
-          ),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            breadcrumbJsonLd([
+            })} />
+      <JsonLd data={breadcrumbJsonLd([
               { name: "Home", path: routes.home() },
               { name: "How to calculate GPA", path: routes.howToCalculateGpa() },
-            ]),
-          ),
-        }}
-      />
+            ])} />
 
       <PageHero
         title="How to calculate GPA and CGPA"
