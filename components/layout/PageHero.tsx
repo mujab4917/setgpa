@@ -35,7 +35,7 @@ export function PageHero({
 
       <Container className={compact ? "relative z-10 py-5 sm:py-7" : "relative z-10 py-10 sm:py-14"}>
         {breadcrumbs && (
-          <div className="[&_a]:text-ink-700/70 [&_a:hover]:text-ink-900 [&_ol]:text-ink-700/50">
+          <div>
             <Breadcrumbs items={breadcrumbs} />
           </div>
         )}
