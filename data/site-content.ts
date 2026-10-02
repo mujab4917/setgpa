@@ -428,6 +428,33 @@ export const whatsappMessages = {
  * the grading data comes from and how honest it is about its own limits.
  */
 export const aboutContent = {
+  /** How a grade table gets onto the site: a real sequence, so it is numbered. */
+  stepsHeading: "How a grade table gets onto the site",
+  steps: [
+    {
+      title: "Collect",
+      body: "Grading rules are taken from university handbooks, academic regulations and student transcripts.",
+    },
+    {
+      title: "Enter by hand",
+      body: "Each rule is typed in per university, so one campus never changes another's grade table.",
+    },
+    {
+      title: "Mark as unverified",
+      body: "Until it is checked, the university page shows a clear notice that the table is demo data.",
+    },
+    {
+      title: "Verify and name the source",
+      body: "Once a table is checked against an official document, the notice is replaced by the source.",
+    },
+  ],
+  principlesHeading: "What SetGPA stands for",
+  principles: [
+    { title: "One grade table per university", body: "No national average that does not exist." },
+    { title: "Free, with no account", body: "Nothing you enter is saved or shared." },
+    { title: "Honest about its data", body: "Every page says whether its table is verified." },
+  ],
+
   metaTitle: "About Our GPA Calculator and Grading Data",
   metaDescription:
     "Who runs this GPA and CGPA calculator, where each university's grading data comes from, how it is checked, and what the site does not do.",
@@ -475,6 +502,38 @@ export const contactContent = {
     "The calculator gave a result you think is wrong.",
     "You have a suggestion that would make the site more useful.",
   ],
+  /**
+   * The three things people usually write in about. Each one opens WhatsApp
+   * with a message already started, so the sender only fills in the blanks.
+   */
+  actionsHeading: "What do you need?",
+  actionsIntro: "Pick one and WhatsApp opens with the message started for you.",
+  quickActions: [
+    {
+      title: "Add my university",
+      body: "Your university or campus is missing from the list.",
+      message:
+        "Hi SetGPA, please add my university.\nUniversity: \nCity: \nProgramme or department: \nHandbook link or photo: (attached)",
+    },
+    {
+      title: "Report a wrong grade table",
+      body: "A grade point or marks range does not match your handbook.",
+      message:
+        "Hi SetGPA, a grade table on your site does not match my handbook.\nUniversity: \nGrade that is wrong: \nCorrect value: \nHandbook page or photo: (attached)",
+    },
+    {
+      title: "Suggest an improvement",
+      body: "A calculator result looks wrong, or you have an idea to make the site better.",
+      message: "Hi SetGPA, I have a suggestion:\n",
+    },
+  ],
+  checklistHeading: "Make your message easy to act on",
+  checklist: [
+    "The university, and the programme or department.",
+    "What the correct values are.",
+    "A photo or link of the handbook page. With one, the table can be marked as verified straight away.",
+  ],
+  responseHeading: "How fast do we reply?",
   helpfulHeading: "What makes a report easy to act on",
   helpfulBody:
     "Tell us the university, the programme or department, and what the correct values are. If you can attach a photo or a link to the handbook page, the correction can be applied and marked as verified straight away.",

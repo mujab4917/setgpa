@@ -73,11 +73,8 @@ export default async function HomePage() {
       ["karachi/ned-university", "NED University"],
       ["islamabad/nust", "NUST"],
       ["lahore/uet-lahore", "UET Lahore"],
-      ["islamabad/quaid-i-azam-university", "Quaid-i-Azam University"],
-      ["karachi/university-of-karachi", "University of Karachi"],
-      ["lahore/gcu-lahore", "GCU Lahore"],
-      ["peshawar/university-of-peshawar", "University of Peshawar"],
-      ["faisalabad/university-of-agriculture-faisalabad", "UAF"],
+      ["karachi/university-of-karachi", "Karachi University"],
+      ["islamabad/quaid-i-azam-university", "QAU"],
     ] as const
   ).flatMap(([key, label]) => {
     const university = universities.find((u) => `${u.citySlug}/${u.slug}` === key);
@@ -108,7 +105,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden">
         <HeroBackdrop />
         <HeroFloaters />
-        <Container className="relative z-10 pb-8 pt-7 text-center sm:pb-24 sm:pt-20 lg:pt-24">
+        <Container className="relative z-10 pb-8 pt-7 text-center sm:pb-12 sm:pt-12 lg:pt-14">
           <h1 className="mx-auto max-w-4xl animate-fade-up text-[2rem] font-extrabold leading-[1.06] text-ink-900 sm:text-6xl sm:leading-[0.98] lg:text-7xl">
             {homeContent.heroHeading}
           </h1>
@@ -126,7 +123,7 @@ export default async function HomePage() {
           </div>
 
           {popularPublic.length > 0 && (
-            <div className="mx-auto mt-4 max-w-2xl animate-fade-up sm:mt-6" style={{ animationDelay: "230ms" }}>
+            <div className="mx-auto mt-4 max-w-3xl animate-fade-up sm:mt-5" style={{ animationDelay: "230ms" }}>
               <p className="mb-2 text-left text-xs font-semibold text-ink-700 sm:mb-3 sm:text-center sm:text-sm">
                 Popular public universities
               </p>
@@ -145,7 +142,7 @@ export default async function HomePage() {
           )}
 
           <ul
-            className="mx-auto mt-3 grid max-w-3xl animate-fade-up grid-cols-3 gap-2 text-left sm:mt-12 sm:gap-4"
+            className="mx-auto mt-3 grid max-w-3xl animate-fade-up grid-cols-3 gap-2 text-left sm:mt-8 sm:gap-4"
             style={{ animationDelay: "300ms" }}
           >
             {[
@@ -176,7 +173,7 @@ export default async function HomePage() {
       <UniversityTicker names={tickerNames} />
 
       {/* ---------- Try it ---------- */}
-      <section aria-labelledby="try-heading" className="py-9 sm:py-24">
+      <section aria-labelledby="try-heading" className="py-9 sm:py-12">
         <Container>
           <div className="grid items-center gap-7 sm:gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
             <Reveal>
@@ -202,7 +199,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------- Why this site ---------- */}
-      <section aria-label="Why this site" className="py-3 sm:py-20">
+      <section aria-label="Why this site" className="py-3 sm:py-6">
         <Container>
           <Reveal>
             <BentoFeatures cityCount={cities.length} universityCount={universities.length} />
@@ -211,7 +208,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------- How it works (a real sequence) ---------- */}
-      <section aria-labelledby="how-heading" className="pb-9 pt-6 sm:pb-24 sm:pt-0">
+      <section aria-labelledby="how-heading" className="pb-9 pt-6 sm:pb-12 sm:pt-6">
         <Container>
           <Reveal>
             <h2 id="how-heading" className="max-w-xl text-2xl font-bold text-ink-900 sm:text-4xl">
@@ -246,7 +243,7 @@ export default async function HomePage() {
 
       {/* ---------- Cities ---------- */}
       <section id="cities" aria-labelledby="cities-heading" className="scroll-mt-4 bg-white">
-        <Container className="py-9 sm:py-20">
+        <Container className="py-9 sm:py-12">
           <Reveal>
             <h2 id="cities-heading" className="text-2xl font-bold text-ink-900 sm:text-4xl">
               {homeContent.citiesHeading}
@@ -270,7 +267,7 @@ export default async function HomePage() {
       {showcaseUniversities.length > 0 && (
         <section
           aria-labelledby="universities-heading"
-          className="overflow-x-hidden py-9 sm:py-24"
+          className="overflow-x-hidden py-9 sm:py-12"
         >
           <Container>
             <Reveal>
@@ -300,10 +297,10 @@ export default async function HomePage() {
       />
 
       {/* ---------- Target GPA calculator promo ---------- */}
-      <section aria-labelledby="target-planner-heading" className="py-9 sm:py-24">
+      <section aria-labelledby="target-planner-heading" className="py-9 sm:py-12">
         <Container>
           <Reveal>
-            <div className="relative overflow-hidden rounded-3xl bg-brand-800 p-5 text-white sm:rounded-[2rem] sm:p-14">
+            <div className="relative overflow-hidden rounded-3xl bg-brand-800 p-5 text-white sm:rounded-[2rem] sm:p-10">
               <div
                 aria-hidden="true"
                 className="absolute inset-0 opacity-30"
@@ -339,7 +336,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------- GPA basics (keyword content + internal links) ---------- */}
-      <section aria-labelledby="basics-heading" className="bg-white py-9 sm:py-24">
+      <section aria-labelledby="basics-heading" className="bg-white py-9 sm:py-12">
         <Container>
           <Reveal>
             <h2 id="basics-heading" className="max-w-2xl text-2xl font-bold text-ink-900 sm:text-4xl">
@@ -351,7 +348,7 @@ export default async function HomePage() {
             </p>
           </Reveal>
 
-          <div className="mt-5 grid gap-3 sm:mt-10 sm:gap-5 lg:grid-cols-2">
+          <div className="mt-5 grid gap-3 sm:mt-8 sm:gap-5 lg:grid-cols-2">
             <article className="rounded-2xl border border-ink-900/10 bg-cream-50 p-4 sm:rounded-3xl sm:p-8">
               <h3 className="text-lg font-bold text-ink-900 sm:text-2xl">How to calculate GPA</h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-700 sm:mt-3 sm:text-base">
@@ -395,7 +392,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------- WhatsApp feedback ---------- */}
-      <Container className="py-9 sm:py-24">
+      <Container className="py-9 sm:py-12">
         <WhatsAppContact message={generalFeedbackMessage()} />
       </Container>
     </>

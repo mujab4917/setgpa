@@ -25,7 +25,7 @@ export function BentoFeatures({
   return (
     <div className="grid grid-cols-2 gap-2.5 sm:gap-4 lg:grid-cols-6 lg:grid-rows-2">
       <TiltCard maxTilt={3} className="col-span-2 rounded-2xl sm:rounded-[1.75rem] lg:col-span-4 lg:row-span-2">
-        <div className="flex h-full flex-col justify-between rounded-2xl border border-ink-900/10 bg-white p-4 sm:rounded-[1.75rem] sm:p-10">
+        <div className="flex h-full flex-col justify-between rounded-2xl border border-ink-900/10 bg-white p-4 sm:rounded-[1.75rem] sm:p-8">
           <div>
             <h3 className="max-w-md text-xl font-bold text-ink-900 sm:text-4xl sm:leading-[1.05]">
               The same grade is not worth the same points everywhere.

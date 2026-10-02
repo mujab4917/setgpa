@@ -48,7 +48,7 @@ export function ParallaxBand({
   return (
     <section
       ref={sectionRef}
-      className="scene-3d relative isolate overflow-hidden bg-cream-100 pb-16 pt-10 sm:py-36"
+      className="scene-3d relative isolate overflow-hidden bg-cream-100 pb-16 pt-10 sm:py-24"
     >
       <motion.div
         aria-hidden="true"

@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 
-import { WhatsAppContact } from "@/components/feedback/WhatsAppContact";
 import { PageHero } from "@/components/layout/PageHero";
 import { SocialLinks } from "@/components/layout/SocialLinks";
 import { Container } from "@/components/ui/Container";
-import { MailIcon } from "@/components/ui/icons";
+import { MailIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { contactContent, footerContent } from "@/data/site-content";
 import { routes } from "@/lib/routes";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { siteConfig } from "@/lib/site-config";
-import { generalFeedbackMessage } from "@/lib/whatsapp";
+import { buildWhatsAppLink, generalFeedbackMessage } from "@/lib/whatsapp";
 
 /**
  * CONTACT PAGE -> /contact
@@ -17,6 +16,10 @@ import { generalFeedbackMessage } from "@/lib/whatsapp";
  * Two direct channels, WhatsApp and email, and no contact form. A form needs
  * an email service, spam handling and an inbox someone watches; a WhatsApp
  * message or a mailto link needs none of that.
+ *
+ * The three most common reasons to write each get their own card. A card opens
+ * WhatsApp with the message already started (or, if WhatsApp is not set up,
+ * an email draft), so the sender only fills in the blanks.
  *
  * All wording lives in data/site-content.ts -> contactContent.
  */
@@ -29,10 +32,20 @@ export const metadata: Metadata = buildPageMetadata({
 
 export default function ContactPage() {
   const email = siteConfig.contactEmail.trim();
+  const generalHref = buildWhatsAppLink(generalFeedbackMessage());
+
+  const actions = contactContent.quickActions.map((action) => {
+    const whatsapp = buildWhatsAppLink(action.message);
+    const mail = email
+      ? `mailto:${email}?subject=${encodeURIComponent(action.title)}&body=${encodeURIComponent(action.message)}`
+      : null;
+    return { ...action, href: whatsapp ?? mail, viaWhatsApp: Boolean(whatsapp) };
+  });
 
   return (
     <>
       <PageHero
+        compact
         title={contactContent.heading}
         description={contactContent.intro}
         breadcrumbs={[
@@ -41,68 +54,107 @@ export default function ContactPage() {
         ]}
       />
 
-      <Container className="py-10 sm:py-14">
-        <div className="grid gap-5 lg:grid-cols-2">
-          <WhatsAppContact message={generalFeedbackMessage()} />
+      <Container className="py-7 sm:py-10">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-10">
+          {/* ---------- Left: what do you need? ---------- */}
+          <div>
+            <h2 className="text-xl font-extrabold text-ink-900 sm:text-3xl">{contactContent.actionsHeading}</h2>
+            <p className="mt-1.5 text-sm text-ink-700 sm:text-base">{contactContent.actionsIntro}</p>
 
-          {email && (
-            <section
-              aria-labelledby="email-contact-heading"
-              className="rounded-xl border border-ink-900/10 bg-white p-5 sm:p-6"
-            >
-              <h2
-                id="email-contact-heading"
-                className="text-xl font-bold text-ink-900"
-              >
-                {contactContent.emailHeading}
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink-700">
-                {contactContent.emailBody}
-              </p>
-              <a
-                href={`mailto:${email}?subject=${encodeURIComponent(contactContent.emailSubject)}`}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg border border-ink-900/20 bg-white px-5 py-2.5 text-sm font-semibold text-ink-900 transition-colors hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800"
-              >
-                <MailIcon />
-                {email}
-              </a>
-            </section>
-          )}
-        </div>
-
-        <div className="mt-10 grid max-w-4xl gap-8 sm:grid-cols-2">
-          <section>
-            <h2 className="text-xl font-bold text-ink-900">
-              {contactContent.reasonsHeading}
-            </h2>
-            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-ink-700">
-              {contactContent.reasons.map((reason) => (
-                <li key={reason} className="flex gap-2">
-                  <span aria-hidden="true" className="text-brand-600">
-                    &bull;
-                  </span>
-                  <span>{reason}</span>
+            <ul className="mt-4 grid gap-3 sm:mt-6">
+              {actions.map((action) => (
+                <li
+                  key={action.title}
+                  className="flex flex-col gap-3 rounded-2xl border border-ink-900/10 bg-white p-4 transition-colors hover:border-brand-400 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-5"
+                >
+                  <div>
+                    <h3 className="text-base font-bold text-ink-900 sm:text-lg">{action.title}</h3>
+                    <p className="mt-0.5 text-sm text-ink-700">{action.body}</p>
+                  </div>
+                  {action.href && (
+                    <a
+                      href={action.href}
+                      {...(action.viaWhatsApp ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full bg-brand-600 px-5 py-2.5 text-sm font-bold text-white shadow-[0_8px_18px_-8px_rgba(31,46,41,0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-brand-700"
+                    >
+                      {action.viaWhatsApp ? <WhatsAppIcon /> : <MailIcon />}
+                      {action.viaWhatsApp ? "Message on WhatsApp" : "Send an email"}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
-          </section>
 
-          <section>
-            <h2 className="text-xl font-bold text-ink-900">
-              {contactContent.helpfulHeading}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-ink-700">
-              {contactContent.helpfulBody}
-            </p>
-            <p className="mt-4 text-sm text-ink-700">
-              {contactContent.responseNote}
-            </p>
+            <section
+              aria-labelledby="checklist-heading"
+              className="mt-6 rounded-2xl border border-brand-200 bg-brand-50 p-4 sm:mt-8 sm:p-6"
+            >
+              <h2 id="checklist-heading" className="text-lg font-extrabold text-ink-900 sm:text-xl">
+                {contactContent.checklistHeading}
+              </h2>
+              <ul className="mt-3 space-y-2.5">
+                {contactContent.checklist.map((item) => (
+                  <li key={item} className="flex gap-3 text-sm leading-relaxed text-ink-900 sm:text-base">
+                    <span
+                      aria-hidden="true"
+                      className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-600 text-[11px] font-bold text-white"
+                    >
+                      &#10003;
+                    </span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
 
-            <h2 className="mt-8 text-xl font-bold text-ink-900">
-              {contactContent.followHeading}
-            </h2>
-            <SocialLinks className="mt-3" />
-          </section>
+          {/* ---------- Right: direct channels ---------- */}
+          <aside aria-label="Other ways to reach us" className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+            {generalHref && (
+              <section className="rounded-2xl bg-brand-800 p-5 text-white sm:p-6">
+                <h2 className="text-lg font-extrabold sm:text-xl">Just want to say hello?</h2>
+                <p className="mt-1.5 text-sm leading-relaxed text-white/80">
+                  WhatsApp is the fastest way to reach us.
+                </p>
+                <a
+                  href={generalHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-marker-300 px-5 py-2.5 text-sm font-bold text-ink-900 transition-colors hover:bg-marker-400"
+                >
+                  <WhatsAppIcon />
+                  Open WhatsApp
+                </a>
+              </section>
+            )}
+
+            {email && (
+              <section
+                aria-labelledby="email-contact-heading"
+                className="rounded-2xl border border-ink-900/10 bg-white p-5 sm:p-6"
+              >
+                <h2 id="email-contact-heading" className="text-lg font-extrabold text-ink-900 sm:text-xl">
+                  {contactContent.emailHeading}
+                </h2>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-700">{contactContent.emailBody}</p>
+                <a
+                  href={`mailto:${email}?subject=${encodeURIComponent(contactContent.emailSubject)}`}
+                  className="mt-4 inline-flex max-w-full items-center gap-2 break-all rounded-xl border border-ink-900/20 px-4 py-2.5 text-sm font-semibold text-ink-900 transition-colors hover:border-brand-600 hover:bg-brand-50"
+                >
+                  <MailIcon />
+                  {email}
+                </a>
+              </section>
+            )}
+
+            <section className="rounded-2xl border border-ink-900/10 bg-white p-5 sm:p-6">
+              <h2 className="text-lg font-extrabold text-ink-900 sm:text-xl">{contactContent.responseHeading}</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-700">{contactContent.responseNote}</p>
+
+              <h2 className="mt-5 text-lg font-extrabold text-ink-900 sm:text-xl">{contactContent.followHeading}</h2>
+              <SocialLinks className="mt-3" />
+            </section>
+          </aside>
         </div>
       </Container>
     </>
