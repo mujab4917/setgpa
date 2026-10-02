@@ -379,7 +379,7 @@ export default async function HomePage() {
       </section>
 
       {/* ---------- WhatsApp feedback ---------- */}
-      <Container className="pb-16">
+      <Container className="py-16 sm:py-24">
         <WhatsAppContact message={generalFeedbackMessage()} />
       </Container>
     </>
