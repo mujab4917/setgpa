@@ -48,7 +48,7 @@ export function CityDirectory({ cities }: { cities: CityListItem[] }) {
   }, [cities, query, region, sort]);
 
   const chip = (active: boolean) =>
-    `rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+    `rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition-all duration-200 sm:px-4 sm:py-2 sm:text-sm ${
       active
         ? "border-brand-700 bg-brand-700 text-white shadow-sm"
         : "border-ink-900/20 bg-white text-ink-900 hover:border-brand-600 hover:bg-brand-50"
@@ -92,7 +92,7 @@ export function CityDirectory({ cities }: { cities: CityListItem[] }) {
         </div>
       </div>
 
-      <div role="group" aria-label="Filter by province" className="mt-5 flex flex-wrap gap-2">
+      <div role="group" aria-label="Filter by province" className="chip-row chip-row--wrap mt-4 sm:mt-5">
         <button type="button" aria-pressed={region === "All"} onClick={() => setRegion("All")} className={chip(region === "All")}>
           All <span className="ml-1 tabular-nums opacity-70">{cities.length}</span>
         </button>

@@ -81,7 +81,7 @@ export function HeroGradebook() {
 
         <ul className="divide-y divide-ink-900/8 px-5">
           {COURSES.map((course, i) => (
-            <li key={course.name} className="py-4">
+            <li key={course.name} className="py-3 sm:py-4">
               <div className="flex items-baseline justify-between gap-3">
                 <p className="text-sm font-semibold text-ink-900">{course.name}</p>
                 <p className="text-xs text-ink-700">{course.credits} credit hours</p>
@@ -114,7 +114,7 @@ export function HeroGradebook() {
         <div className="flex items-end justify-between gap-4 border-t border-ink-900/10 bg-cream-50 px-5 py-5" aria-live="polite">
           <div>
             <p className="text-sm text-ink-700">Semester GPA</p>
-            <p className="tabular font-[family-name:var(--font-display)] text-6xl font-extrabold leading-none text-ink-900 sm:text-7xl">
+            <p className="tabular font-[family-name:var(--font-display)] text-5xl font-extrabold leading-none text-ink-900 sm:text-7xl">
               {shown.toFixed(2)}
             </p>
           </div>

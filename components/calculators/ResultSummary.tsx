@@ -238,7 +238,7 @@ export function ResultSummary({
 
           <div>
             <p className="text-sm font-semibold text-ink-700">{headlineLabel}</p>
-            <p className="mt-1 font-[family-name:var(--font-display)] text-5xl font-extrabold tabular-nums">
+            <p className="mt-1 font-[family-name:var(--font-display)] text-4xl font-extrabold tabular-nums sm:text-5xl">
               <span className={value === null ? "text-ink-900" : band.number}>
                 {animated === null ? emptyValue : animated.toFixed(2)}
               </span>

@@ -35,15 +35,15 @@ export function GradeScaleTable({ grades, scale }: { grades: GradeOption[]; scal
         </caption>
         <thead className="bg-brand-800 text-sm text-white">
           <tr>
-            <th scope="col" className="px-4 py-3 font-semibold">
+            <th scope="col" className="px-3 py-2.5 font-semibold sm:px-4 sm:py-3">
               {universityPageContent.gradeColumnLabel}
             </th>
             {hasPercentages && (
-              <th scope="col" className="px-4 py-3 text-right font-semibold">
+              <th scope="col" className="px-3 py-2.5 text-right font-semibold sm:px-4 sm:py-3">
                 {universityPageContent.marksColumnLabel}
               </th>
             )}
-            <th scope="col" className="px-4 py-3 text-right font-semibold">
+            <th scope="col" className="px-3 py-2.5 text-right font-semibold sm:px-4 sm:py-3">
               {universityPageContent.gradePointColumnLabel}
             </th>
           </tr>
@@ -57,15 +57,15 @@ export function GradeScaleTable({ grades, scale }: { grades: GradeOption[]; scal
 
             return (
               <tr key={option.grade} className="transition-colors hover:bg-cream-100">
-                <th scope="row" className="px-4 py-2.5 font-semibold text-ink-900">
-                  <span className="inline-flex min-h-9 min-w-11 items-center justify-center rounded-lg px-2 font-bold text-ink-900" style={{ backgroundColor: `${gradeColor(option.gradePoint, scale)}33`, boxShadow: `inset 0 0 0 1.5px ${gradeColor(option.gradePoint, scale)}` }}>{option.grade}</span>
+                <th scope="row" className="px-3 py-1.5 font-semibold text-ink-900 sm:px-4 sm:py-2.5">
+                  <span className="inline-flex min-h-8 min-w-10 items-center sm:min-h-9 sm:min-w-11 justify-center rounded-lg px-2 font-bold text-ink-900" style={{ backgroundColor: `${gradeColor(option.gradePoint, scale)}33`, boxShadow: `inset 0 0 0 1.5px ${gradeColor(option.gradePoint, scale)}` }}>{option.grade}</span>
                 </th>
                 {hasPercentages && (
-                  <td className="px-4 py-2.5 text-right tabular-nums text-ink-700">
+                  <td className="px-3 py-1.5 text-right tabular-nums sm:px-4 sm:py-2.5 text-ink-700">
                     {range ?? "—"}
                   </td>
                 )}
-                <td className="px-4 py-2.5 text-right tabular-nums text-ink-700">
+                <td className="px-3 py-1.5 text-right tabular-nums sm:px-4 sm:py-2.5 text-ink-700">
                   <span className="font-bold text-ink-900">{formatGpa(option.gradePoint)}</span>
                   <div aria-hidden="true" className="ml-auto mt-1.5 h-1.5 w-20 overflow-hidden rounded-full bg-cream-200 sm:w-32"><div className="h-full rounded-full" style={{ backgroundColor: gradeColor(option.gradePoint, scale), width: `${Math.max(0, Math.min(100, option.gradePoint / scale * 100))}%` }} /></div>
                 </td>

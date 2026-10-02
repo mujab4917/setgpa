@@ -194,9 +194,9 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
       <div className="mt-6 lg:grid lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-14">
       <div className="min-w-0">
       {/* ---------- Grading system ---------- */}
-      <Reveal as="section" className="mt-14">
+      <Reveal as="section" className="mt-8 sm:mt-14">
         <div aria-labelledby="grading-heading">
-        <h2 id="grading-heading" className="text-2xl font-extrabold text-ink-900 sm:text-3xl">
+        <h2 id="grading-heading" className="text-xl font-extrabold text-ink-900 sm:text-3xl">
           {university.shortName ?? university.name} grading system and grade points
         </h2>
         {university.gradingSystemNotes && (
@@ -212,10 +212,10 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
 
 
         {/* ---------- Basic information ---------- */}
-        <section aria-labelledby="university-info-heading" className="mt-16">
+        <section aria-labelledby="university-info-heading" className="mt-9 sm:mt-16">
         <h2
           id="university-info-heading"
-          className="text-2xl font-extrabold text-ink-900 sm:text-3xl"
+          className="text-xl font-extrabold text-ink-900 sm:text-3xl"
         >
           {universityPageContent.basicInfoHeading}
         </h2>
@@ -234,8 +234,8 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
       </section>
 
       {/* ---------- GPA explanation ---------- */}
-      <section aria-labelledby="gpa-heading" className="mt-16">
-        <h2 id="gpa-heading" className="text-2xl font-extrabold text-ink-900 sm:text-3xl">
+      <section aria-labelledby="gpa-heading" className="mt-9 sm:mt-16">
+        <h2 id="gpa-heading" className="text-xl font-extrabold text-ink-900 sm:text-3xl">
           How to calculate GPA at {university.shortName ?? university.name}
         </h2>
         <p className="mt-3 max-w-3xl leading-relaxed text-ink-700">
@@ -247,8 +247,8 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
       </section>
 
       {/* ---------- CGPA explanation ---------- */}
-      <section aria-labelledby="cgpa-heading" className="mt-16">
-        <h2 id="cgpa-heading" className="text-2xl font-extrabold text-ink-900 sm:text-3xl">
+      <section aria-labelledby="cgpa-heading" className="mt-9 sm:mt-16">
+        <h2 id="cgpa-heading" className="text-xl font-extrabold text-ink-900 sm:text-3xl">
           How to calculate CGPA at {university.shortName ?? university.name}
         </h2>
         <p className="mt-3 max-w-3xl leading-relaxed text-ink-700">
@@ -273,9 +273,9 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
       <UniversityFaq items={faqItems} />
       </div>
         <aside aria-label="University fact sheet" className="mt-12 lg:mt-0">
-          <div className="rounded-3xl border border-ink-900/10 bg-white p-6 shadow-[var(--shadow-elevation-2)] lg:sticky lg:top-24">
+          <div className="rounded-2xl border border-ink-900/10 bg-white p-4 shadow-[var(--shadow-elevation-2)] sm:rounded-3xl sm:p-6 lg:sticky lg:top-24">
             <h2 className="text-xl font-extrabold text-ink-900">Fact sheet</h2>
-            <dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:mt-4 sm:gap-y-4 lg:grid-cols-1">
           <InfoRow label={universityPageContent.cityLabel} value={university.city.name} />
           {university.campus && (
             <InfoRow
@@ -340,7 +340,7 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
       />
 
         <WhatsAppContact
-          className="mt-16"
+          className="mt-9 sm:mt-16"
           message={universityFeedbackMessage(university.name, university.city.name)}
         />
 

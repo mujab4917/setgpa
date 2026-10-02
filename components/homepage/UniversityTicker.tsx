@@ -9,7 +9,7 @@ export function UniversityTicker({ names }: { names: string[] }) {
       {names.map((name) => (
         <li
           key={`${hidden}-${name}`}
-          className="whitespace-nowrap font-[family-name:var(--font-display)] text-xl font-semibold text-ink-900/70"
+          className="whitespace-nowrap font-[family-name:var(--font-display)] text-base font-semibold text-ink-900/70 sm:text-xl"
         >
           {name}
         </li>
@@ -19,7 +19,7 @@ export function UniversityTicker({ names }: { names: string[] }) {
   return (
     <div
       aria-label="Universities covered"
-      className="marquee-pause overflow-hidden border-y border-ink-900/10 bg-white py-5"
+      className="marquee-pause overflow-hidden border-y border-ink-900/10 bg-white py-3 sm:py-5"
       style={{ maskImage: "linear-gradient(to right, transparent, black 8%, black 92%, transparent)" }}
     >
       <div className="animate-marquee flex w-max">

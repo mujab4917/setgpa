@@ -16,9 +16,9 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-0 bg-ink-900 text-white/75">
-      <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+      <Container className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 sm:gap-10 sm:py-12 lg:grid-cols-4">
         {/* ---------- Brand ---------- */}
-        <div>
+        <div className="col-span-2 lg:col-span-1">
           <div className="flex items-center gap-3">
             <span
               aria-hidden="true"
@@ -75,7 +75,7 @@ export function SiteFooter() {
         </div>
 
         {/* ---------- Contact ---------- */}
-        <div>
+        <div className="col-span-2 lg:col-span-1">
           <p className="text-sm font-semibold text-white">
             {footerContent.contactHeading}
           </p>

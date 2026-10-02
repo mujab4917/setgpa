@@ -154,8 +154,8 @@ export function GpaCalculator({
                   leaving ? "animate-row-out" : ""
                 } ${row.id === enteringId && !leaving ? "animate-row-in" : ""}`}
               >
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_7rem_8rem_auto] sm:items-end">
-                  <div className="col-span-2 sm:col-span-1">
+                <div className="grid grid-cols-[5rem_1fr_auto] items-end gap-2.5 sm:grid-cols-[1fr_7rem_8rem_auto] sm:gap-3">
+                  <div className="col-span-3 sm:col-span-1">
                     <label className={fieldLabelClass} htmlFor={`${row.id}-name`}>
                       Course name (optional)
                     </label>
@@ -237,7 +237,7 @@ export function GpaCalculator({
                     </div>
                   </div>
 
-                  <div className="col-span-2 flex justify-end sm:col-span-1 sm:pb-1">
+                  <div className="flex justify-end sm:pb-1">
                     <button
                       type="button"
                       onClick={() => removeRow(row.id)}

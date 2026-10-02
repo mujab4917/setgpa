@@ -14,6 +14,7 @@
 import Link from "next/link";
 
 import { CityCard } from "@/components/cities/CityCard";
+import { CityTile } from "@/components/cities/CityTile";
 import { fillTemplate, homeContent } from "@/data/site-content";
 import { routes } from "@/lib/routes";
 import type { CityListItem } from "@/types/domain";
@@ -38,7 +39,17 @@ export function FeaturedCitiesGrid({
 
   return (
     <div>
-      <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Phones: compact one-line rows, so three cities do not take three screens. */}
+      <ul className="grid gap-2 sm:hidden">
+        {visible.map((city) => (
+          <li key={city.id}>
+            <CityTile city={city} />
+          </li>
+        ))}
+      </ul>
+
+      {/* Tablets and desktops: the large illustrated cards. */}
+      <ul className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3">
         {visible.map((city, index) => {
           // Only the most recently revealed row should flip in - cities that
           // were already showing must not replay the animation.
@@ -59,7 +70,7 @@ export function FeaturedCitiesGrid({
         })}
       </ul>
 
-      <div className="mt-8 text-center">
+      <div className="mt-4 text-center sm:mt-8">
         {!poolExhausted ? (
           <button
             type="button"

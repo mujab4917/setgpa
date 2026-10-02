@@ -33,7 +33,7 @@ export function PageHero({
       <HeroBackdrop />
       {artwork && <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 hidden w-2/5 overflow-hidden opacity-40 lg:block" style={{ maskImage: "linear-gradient(to right, transparent, black 35%)" }}>{artwork}</div>}
 
-      <Container className={compact ? "relative z-10 py-5 sm:py-7" : "relative z-10 py-10 sm:py-14"}>
+      <Container className={compact ? "relative z-10 py-5 sm:py-7" : "relative z-10 py-6 sm:py-14"}>
         {breadcrumbs && (
           <div>
             <Breadcrumbs items={breadcrumbs} />
@@ -50,7 +50,7 @@ export function PageHero({
         )}
 
         <h1
-          className="mt-2 max-w-3xl animate-fade-up text-4xl font-extrabold leading-[1.02] text-ink-900 sm:text-5xl"
+          className="mt-3 max-w-3xl animate-fade-up text-[1.7rem] font-extrabold leading-[1.1] text-ink-900 sm:text-5xl sm:leading-[1.02]"
           style={{ animationDelay: "80ms" }}
         >
           {title}
@@ -58,7 +58,7 @@ export function PageHero({
 
         {description && (
           <p
-            className="mt-4 max-w-2xl animate-fade-up text-lg leading-relaxed text-ink-700"
+            className="mt-2.5 max-w-2xl animate-fade-up text-[15px] leading-relaxed text-ink-700 sm:mt-4 sm:text-lg"
             style={{ animationDelay: "140ms" }}
           >
             {description}

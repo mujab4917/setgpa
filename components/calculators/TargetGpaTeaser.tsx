@@ -35,7 +35,7 @@ export function TargetGpaTeaser({
       <Link href={href} className="group grid gap-6 p-5 sm:grid-cols-[1fr_auto] sm:items-center sm:p-8">
         <div>
           <p className="text-sm font-bold text-marker-300">{targetTeaserContent.eyebrow}</p>
-          <h2 id="target-planner-heading" className="mt-2 text-2xl font-extrabold text-white sm:text-3xl">
+          <h2 id="target-planner-heading" className="mt-2 text-xl font-extrabold text-white sm:text-3xl">
             {targetTeaserContent.heading}
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/75">

@@ -48,7 +48,7 @@ export function ParallaxBand({
   return (
     <section
       ref={sectionRef}
-      className="scene-3d relative isolate overflow-hidden bg-cream-100 py-24 sm:py-36"
+      className="scene-3d relative isolate overflow-hidden bg-cream-100 pb-16 pt-10 sm:py-36"
     >
       <motion.div
         aria-hidden="true"
@@ -72,10 +72,10 @@ export function ParallaxBand({
         className="preserve-3d mx-auto w-full max-w-2xl px-4 sm:px-6"
       >
         <div
-          className="relative mx-auto rounded-3xl border border-ink-900/10 bg-white p-8 text-left shadow-2xl sm:p-12"
+          className="relative mx-auto rounded-3xl border border-ink-900/10 bg-white p-5 text-left shadow-2xl sm:p-12"
           style={{ transform: "translateZ(20px)" }}
         >
-          <h2 className="text-3xl font-bold text-ink-900 sm:text-5xl sm:leading-[1.05]">
+          <h2 className="text-xl font-bold text-ink-900 sm:text-5xl sm:leading-[1.05]">
             {heading}
           </h2>
           {children && (

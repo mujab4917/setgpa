@@ -19,7 +19,7 @@ export function UniversityCalculator(props: {
 
   return (
     <section id="calculator" aria-label="GPA and CGPA calculator" className="scroll-mt-24 overflow-hidden rounded-[1.75rem] border border-ink-900/10 bg-white shadow-[var(--shadow-elevation-3)]">
-      <div className="border-b border-ink-900/10 bg-cream-50 p-4 sm:p-7">
+      <div className="border-b border-ink-900/10 bg-cream-50 p-3 sm:p-7">
         <div role="tablist" aria-label="Calculation type" className="grid grid-cols-2 gap-1 rounded-full bg-cream-200 p-1.5">
           {modes.map((item, index) => (
             <button
@@ -50,7 +50,7 @@ export function UniversityCalculator(props: {
           ))}
         </div>
         <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-2xl font-extrabold text-ink-900 sm:text-3xl">
+          <h2 className="text-lg font-extrabold text-ink-900 sm:text-3xl">
             {mode === "gpa" ? "Your semester, calculated." : "Your overall progress, calculated."}
           </h2>
           <span className="rounded-full bg-marker-300 px-3 py-1 text-xs font-bold text-ink-900">
