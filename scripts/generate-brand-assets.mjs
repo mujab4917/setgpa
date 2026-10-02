@@ -11,7 +11,7 @@
  *   public/icon-192.png        app icon               -> web app manifest
  *   public/icon-512.png        app icon               -> web app manifest
  *   app/favicon.ico            16, 32 and 48 px       -> browser tabs
- *   app/icon.png               512 px                 -> modern favicon
+ *   app/icon.png               192 px                 -> modern favicon (a multiple of 48, as Google asks)
  *   app/apple-icon.png         180 px                 -> iPhone / iPad home screen
  *   public/og-image.png        1200x630               -> link previews (WhatsApp, Facebook, LinkedIn, X)
  *
@@ -121,7 +121,8 @@ async function main() {
   const icon512 = await tile(markCrop, 512, { rounded: true });
   const icon192 = await sharp(icon512).resize(192, 192).png().toBuffer();
   const apple180 = await tile(markCrop, 180, { rounded: false });
-  write(out("app", "icon.png"), icon512);
+  // Google asks for a favicon whose size is a multiple of 48 px; 192 = 4 x 48.
+  write(out("app", "icon.png"), icon192);
   write(out("app", "apple-icon.png"), apple180);
   write(out("public", "icon-192.png"), icon192);
   write(out("public", "icon-512.png"), icon512);
