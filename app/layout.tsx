@@ -64,6 +64,16 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  // Icons are declared here (files live in public/, made by
+  // scripts/generate-brand-assets.mjs) so each one states its true size.
+  // Google asks for a favicon whose size is a multiple of 48 px: 48 and 192.
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   // Stops phones from turning numbers like 3.67 into phone-number links.
   formatDetection: { telephone: false, email: false, address: false },
 };

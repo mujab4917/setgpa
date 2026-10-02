@@ -10,14 +10,14 @@
  *   public/logo-square.png     512x512 mark on white  -> Organization "logo" in structured data
  *   public/icon-192.png        app icon               -> web app manifest
  *   public/icon-512.png        app icon               -> web app manifest
- *   app/favicon.ico            16, 32 and 48 px       -> browser tabs
- *   app/icon.png               192 px                 -> modern favicon (a multiple of 48, as Google asks)
- *   app/apple-icon.png         180 px                 -> iPhone / iPad home screen
+ *   public/favicon.ico         16, 32 and 48 px       -> browser tabs and Google results
+ *   public/apple-touch-icon.png 180 px                -> iPhone / iPad home screen
  *   public/og-image.png        1200x630               -> link previews (WhatsApp, Facebook, LinkedIn, X)
  *
- * Next.js finds the favicon and icon files in app/ by their names and adds the
- * right <link> tags automatically. The share image is referenced explicitly by
- * lib/seo/metadata.ts (/og-image.png), so every page gets it.
+ * Every file lives in public/ and is referenced explicitly: the <link> icon tags
+ * by app/layout.tsx (metadata.icons) and the share image by lib/seo/metadata.ts
+ * (/og-image.png). Declaring them ourselves keeps the declared sizes accurate:
+ * favicon.ico as 48x48 and the PNG as 192x192, both multiples of 48 as Google asks.
  */
 
 import fs from "node:fs";
@@ -132,9 +132,7 @@ async function main() {
   const icon512 = await tile(markCrop, 512, { rounded: true });
   const icon192 = await sharp(icon512).resize(192, 192).png().toBuffer();
   const apple180 = await tile(markCrop, 180, { rounded: false });
-  // Google asks for a favicon whose size is a multiple of 48 px; 192 = 4 x 48.
-  write(out("app", "icon.png"), icon192);
-  write(out("app", "apple-icon.png"), apple180);
+  write(out("public", "apple-touch-icon.png"), apple180);
   write(out("public", "icon-192.png"), icon192);
   write(out("public", "icon-512.png"), icon512);
 
@@ -142,7 +140,7 @@ async function main() {
   for (const size of [16, 32, 48]) {
     icoImages.push({ size, buffer: await sharp(icon512).resize(size, size).png().toBuffer() });
   }
-  write(out("app", "favicon.ico"), buildIco(icoImages));
+  write(out("public", "favicon.ico"), buildIco(icoImages));
 
   // ---- Social share image, 1200 x 630 ----
   const W = 1200;

@@ -13,7 +13,7 @@ Everything search engines and social apps read from SetGPA, and where it lives.
 | robots.txt | `app/robots.ts` | `/robots.txt` |
 | Titles, descriptions, canonical, Open Graph, Twitter cards | `lib/seo/metadata.ts` | in every page's `<head>` |
 | Structured data (JSON-LD) | `lib/seo/schema.ts`, `components/seo/JsonLd.tsx` | in every page's `<head>` |
-| Favicon and app icons | `app/favicon.ico`, `app/icon.png`, `app/apple-icon.png` | `/favicon.ico` and friends |
+| Favicon and app icons | `public/favicon.ico`, `public/icon-192.png`, `public/apple-touch-icon.png`, declared in `app/layout.tsx` | `/favicon.ico` and friends |
 | Web app manifest | `app/manifest.ts` | `/manifest.webmanifest` |
 | Share image (WhatsApp, Facebook, LinkedIn, X) | `public/og-image.png` | `/og-image.png` |
 | Per-university share image | `app/universities/[citySlug]/[universitySlug]/opengraph-image.tsx` | generated for each university |
@@ -96,7 +96,7 @@ Check any page at <https://search.google.com/test/rich-results> and
 1. Replace `brand/setgpa-logo-source.webp` with the new logo (transparent
    background, wide shape).
 2. Run `node scripts/generate-brand-assets.mjs`.
-3. Commit the changed files in `public/` and `app/`, then push.
+3. Commit the changed files in `public/`, `lib/seo/og-logo.ts` and `app/`, then push.
 
 That regenerates the header and footer logos, the square logo, the favicons, the
 Apple icon, the app icons and the share image.
