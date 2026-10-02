@@ -10,6 +10,7 @@
  *     students routinely screenshot a GPA to send to someone.
  */
 
+import { trackEvent } from "@/lib/analytics";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
@@ -169,6 +170,7 @@ export function ResultSummary({
         await navigator.clipboard.writeText(copyText);
         setFailed(false);
         setCopied(true);
+        trackEvent("copy_result", { university: universityName, result_type: headlineLabel });
         return;
       }
     } catch {
@@ -178,6 +180,7 @@ export function ResultSummary({
     if (legacyCopy(copyText)) {
       setFailed(false);
       setCopied(true);
+      trackEvent("copy_result", { university: universityName, result_type: headlineLabel });
       return;
     }
 
@@ -264,7 +267,7 @@ export function ResultSummary({
         <button type="button" disabled={downloading} className="min-h-11 rounded-full bg-ink-900 px-5 py-2 text-sm font-bold text-white transition-colors hover:bg-brand-700 disabled:opacity-60" onClick={async () => {
           setDownloading(true);
           setDownloadStatus("");
-          try { await downloadResultCard({ title: headlineLabel, university: universityName, url: shareUrl, value, scale: scaleLabel, items }); setDownloadStatus("Your result card is ready."); }
+          try { await downloadResultCard({ title: headlineLabel, university: universityName, url: shareUrl, value, scale: scaleLabel, items }); setDownloadStatus("Your result card is ready."); trackEvent("download_result_card", { university: universityName, result_type: headlineLabel }); }
           catch { setDownloadStatus("Could not download. Please try again or use Copy result."); }
           finally { setDownloading(false); }
         }}>{downloading ? "Creating card…" : "Download result card ↗"}</button>

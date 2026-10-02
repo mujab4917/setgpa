@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 
 import "./globals.css";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { BackToTop } from "@/components/layout/BackToTop";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
 import { SiteFooter } from "@/components/layout/SiteFooter";
@@ -115,6 +116,7 @@ export default function RootLayout({
         </main>
         <SiteFooter />
         <BackToTop />
+        <GoogleAnalytics />
       </body>
     </html>
   );

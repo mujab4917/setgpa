@@ -115,7 +115,7 @@ export default async function HomePage() {
 
           <div className="mx-auto mt-5 max-w-2xl animate-fade-up text-left sm:mt-10" style={{ animationDelay: "170ms" }}>
             <div className="rounded-2xl border border-ink-900/10 bg-white p-3 shadow-[var(--shadow-elevation-3)] sm:rounded-3xl sm:p-5">
-              <UniversitySearch universities={universities} />
+              <UniversitySearch universities={universities} context="home" />
             </div>
           </div>
 

@@ -48,6 +48,14 @@ export const siteConfig = {
    */
   indexable: (process.env.CONTEXT ?? "production") === "production",
 
+  /**
+   * Google Analytics 4 Measurement ID. It is public by design (every visitor can
+   * see it in the page source), so it is safe in Git. Override it with
+   * NEXT_PUBLIC_GA_MEASUREMENT_ID; set that variable to an empty string to turn
+   * Analytics off completely.
+   */
+  gaMeasurementId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-4YQY277MGM",
+
   /** Language used in the <html lang> attribute. */
   locale: "en_PK",
 } as const;

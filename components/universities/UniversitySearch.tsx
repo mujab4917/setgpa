@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { searchContent } from "@/data/site-content";
+import { trackEvent } from "@/lib/analytics";
 import { routes } from "@/lib/routes";
 import type { UniversityListItem } from "@/types/domain";
 
@@ -48,10 +49,13 @@ export function UniversitySearch({
   universities,
   className = "",
   placeholder = searchContent.placeholder,
+  context = "site",
 }: {
   universities: UniversityListItem[];
   className?: string;
   placeholder?: string;
+  /** Where this search box is, so reports can tell them apart: "home", "city", "site". */
+  context?: string;
 }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -79,6 +83,29 @@ export function UniversitySearch({
   const hasQuery = trimmed !== "";
   const showNoResults = hasQuery && results.length === 0;
 
+  // Analytics: record what people search for, once they pause typing (so "fa",
+  // "fas", "fast" is reported as one search, not three).
+  useEffect(() => {
+    if (trimmed.length < 2) return;
+    const timer = window.setTimeout(() => {
+      trackEvent("search", { search_term: trimmed, search_context: context, results_count: results.length });
+      if (results.length === 0) {
+        trackEvent("search_no_results", { search_term: trimmed, search_context: context });
+      }
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [trimmed, results.length, context]);
+
+  function trackChoice(university: UniversityListItem, position: number) {
+    trackEvent("search_result_click", {
+      search_term: trimmed,
+      search_context: context,
+      university: university.name,
+      city: university.cityName,
+      position: position + 1,
+    });
+  }
+
   function onKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (results.length === 0) return;
 
@@ -92,6 +119,7 @@ export function UniversitySearch({
       const chosen = results[highlighted];
       if (chosen) {
         event.preventDefault();
+        trackChoice(chosen, highlighted);
         router.push(routes.university(chosen.citySlug, chosen.slug));
       }
     } else if (event.key === "Escape") {
@@ -168,6 +196,7 @@ export function UniversitySearch({
                 <Link
                   href={routes.university(university.citySlug, university.slug)}
                   onMouseEnter={() => setHighlighted(index)}
+                  onClick={() => trackChoice(university, index)}
                   className={`group flex items-center justify-between gap-3 px-4 py-3 transition-colors ${
                     index === highlighted ? "bg-brand-50" : "hover:bg-brand-50"
                   }`}

@@ -9,6 +9,7 @@
  */
 
 import { useMemo, useRef, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 import { ResultSummary } from "@/components/calculators/ResultSummary";
 import {
@@ -132,6 +133,11 @@ export function CgpaCalculator({
           event.preventDefault();
           setShowErrors(true);
           setErrorNonce((value) => value + 1);
+          trackEvent("calculate_cgpa", {
+            university: universityName,
+            semesters_counted: result.countedSemesters,
+            valid: result.cgpa !== null,
+          });
         }}
         noValidate
       >

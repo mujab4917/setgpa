@@ -65,6 +65,32 @@ retired FAQ rich results in 2026), `HowTo` (deprecated).
 Check any page at <https://search.google.com/test/rich-results> and
 <https://validator.schema.org> after it is live.
 
+## Google Analytics 4 (setgpa.com)
+
+- Measurement ID `G-4YQY277MGM` is set in `lib/site-config.ts`. It is a public
+  identifier (visible in every page's source), so it is safe in Git. To change it,
+  set `NEXT_PUBLIC_GA_MEASUREMENT_ID` in Netlify; set it to an empty value to turn
+  Analytics off.
+- The tag is added once, in `components/analytics/GoogleAnalytics.tsx`, and only
+  on the real site. It stays off on localhost and on Netlify deploy previews, so
+  test visits never appear in your reports.
+- Events (see `lib/analytics.ts`), found under Reports -> Engagement -> Events:
+
+  | Event | Meaning | Useful parameters |
+  | --- | --- | --- |
+  | `search` | What a visitor typed in a search box, sent after they pause | `search_term`, `search_context` (home, city, cities), `results_count` |
+  | `search_no_results` | A search that matched nothing: universities to add next | `search_term` |
+  | `search_result_click` | Which university they chose from the results | `university`, `city`, `position` |
+  | `calculate_gpa`, `calculate_cgpa` | A calculation was run | `university`, rows counted |
+  | `copy_result`, `download_result_card` | The result was copied or saved | `university` |
+
+  GPA and CGPA values are never sent.
+- To see these parameters in reports, register them once in Google Analytics:
+  Admin -> Data display -> Custom definitions -> Create custom dimension (event
+  scope) for `search_term`, `search_context`, `university` and `city`.
+- Visitors from the EU or UK should be asked for consent before Analytics runs.
+  The site has no consent banner yet; add one if you expect many such visitors.
+
 ## Changing the logo
 
 1. Replace `brand/setgpa-logo-source.webp` with the new logo (transparent

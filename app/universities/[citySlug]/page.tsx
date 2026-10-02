@@ -105,7 +105,7 @@ export default async function CityPage({ params }: CityPageProps) {
         ]}
       >
         <div className="mt-8 max-w-xl rounded-2xl border border-ink-900/10 bg-white p-4 shadow-[var(--shadow-elevation-2)] sm:p-5">
-          <UniversitySearch universities={universities} placeholder={`Search universities in ${city.name}`} />
+          <UniversitySearch universities={universities} context="city" placeholder={`Search universities in ${city.name}`} />
         </div>
       </PageHero>
 

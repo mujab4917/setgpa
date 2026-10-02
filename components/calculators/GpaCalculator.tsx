@@ -10,6 +10,7 @@
  */
 
 import { useMemo, useRef, useState } from "react";
+import { trackEvent } from "@/lib/analytics";
 
 import { ResultSummary } from "@/components/calculators/ResultSummary";
 import {
@@ -137,6 +138,11 @@ export function GpaCalculator({
           event.preventDefault();
           setShowErrors(true);
           setErrorNonce((value) => value + 1);
+          trackEvent("calculate_gpa", {
+            university: universityName,
+            courses_counted: result.countedCourses,
+            valid: result.gpa !== null,
+          });
         }}
         noValidate
       >

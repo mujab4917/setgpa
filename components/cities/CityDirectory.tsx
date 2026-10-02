@@ -8,11 +8,12 @@
  * page, so every change is instant and nothing is fetched.
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { CityTile } from "@/components/cities/CityTile";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { citiesPageContent } from "@/data/site-content";
+import { trackEvent } from "@/lib/analytics";
 import { getRegion, REGION_ORDER, type Region } from "@/lib/regions";
 import type { CityListItem } from "@/types/domain";
 
@@ -46,6 +47,17 @@ export function CityDirectory({ cities }: { cities: CityListItem[] }) {
     // `cities` arrives in curated "popular" order from the server.
     return sort === "az" ? [...filtered].sort((a, b) => a.name.localeCompare(b.name)) : filtered;
   }, [cities, query, region, sort]);
+
+  // Analytics: what people type into the city search, once they pause.
+  useEffect(() => {
+    const term = normalise(query);
+    if (term.length < 2) return;
+    const timer = window.setTimeout(() => {
+      trackEvent("search", { search_term: term, search_context: "cities", results_count: visible.length });
+      if (visible.length === 0) trackEvent("search_no_results", { search_term: term, search_context: "cities" });
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [query, visible.length]);
 
   const chip = (active: boolean) =>
     `rounded-full border px-3.5 py-1.5 text-[13px] font-semibold transition-all duration-200 sm:px-4 sm:py-2 sm:text-sm ${
