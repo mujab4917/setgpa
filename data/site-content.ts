@@ -17,6 +17,7 @@ export const navContent = {
   links: [
     { label: "Home", href: "/" },
     { label: "Cities", href: "/cities" },
+    { label: "Guides", href: "/guides" },
     { label: "Target GPA", href: "/target-gpa-calculator" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },

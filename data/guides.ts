@@ -12,10 +12,34 @@ import { universityPageContent } from "@/data/site-content";
 export const GUIDE_PUBLISHED = "2026-10-02";
 export const GUIDE_UPDATED = "2026-10-02";
 
+/** Footer "Guides" column. */
 export const guideLinks = [
+  { label: "All guides", href: routes.guides() },
   { label: "How to calculate GPA", href: routes.howToCalculateGpa() },
   { label: "GPA vs CGPA", href: routes.gpaVsCgpa() },
   { label: "Target GPA calculator", href: routes.targetPlanner() },
+] as const;
+
+/**
+ * The guides listed on /guides. To add a guide: create its page under
+ * app/guides/<slug>/page.tsx, add a route in lib/routes.ts, then add it here
+ * and it appears on the hub page, in the footer and in the sitemap.
+ */
+export const guides = [
+  {
+    title: "How to calculate GPA and CGPA",
+    href: routes.howToCalculateGpa(),
+    description:
+      "The GPA formula, a step-by-step method and a worked example, then the same for your cumulative CGPA.",
+    points: ["The GPA and CGPA formulas", "A worked example with real numbers", "Mistakes that give the wrong result"],
+  },
+  {
+    title: "GPA vs CGPA: what is the difference?",
+    href: routes.gpaVsCgpa(),
+    description:
+      "GPA is one semester and CGPA is your whole degree so far. See how they differ and when each one matters.",
+    points: ["A side-by-side comparison", "How one semester moves your CGPA", "Which one universities look at"],
+  },
 ] as const;
 
 // ---------------------------------------------------------------------------

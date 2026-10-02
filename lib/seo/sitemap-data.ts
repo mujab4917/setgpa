@@ -22,6 +22,7 @@ const CONTENT_UPDATED = new Date(GUIDE_UPDATED);
 export function getStaticPageEntries(): SitemapEntry[] {
   return [
     routes.home(),
+    routes.guides(),
     routes.howToCalculateGpa(),
     routes.gpaVsCgpa(),
     routes.cities(),

@@ -19,7 +19,7 @@ import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/schema";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 
 /**
- * GUIDE -> /how-to-calculate-gpa
+ * GUIDE -> /guides/how-to-calculate-gpa
  *
  * Targets "how to calculate GPA", "how to calculate CGPA" and "GPA formula".
  * Answer-first: the formula is in the first screen, the worked example right
@@ -60,6 +60,7 @@ export default function HowToCalculateGpaPage() {
             })} />
       <JsonLd data={breadcrumbJsonLd([
               { name: "Home", path: routes.home() },
+              { name: "Guides", path: routes.guides() },
               { name: "How to calculate GPA", path: routes.howToCalculateGpa() },
             ])} />
 
@@ -68,6 +69,7 @@ export default function HowToCalculateGpaPage() {
         description="Your GPA is the average of your grade points for one semester, weighted by credit hours. Your CGPA is the same calculation across every semester you have finished."
         breadcrumbs={[
           { label: "Home", href: routes.home() },
+          { label: "Guides", href: routes.guides() },
           { label: "How to calculate GPA", href: routes.howToCalculateGpa() },
         ]}
       />

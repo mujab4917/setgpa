@@ -15,8 +15,9 @@
  *
  * KEYWORD MAP (one primary keyword per page)
  *   /                         gpa calculator pakistan
- *   /how-to-calculate-gpa     how to calculate gpa
- *   /gpa-vs-cgpa              gpa vs cgpa
+ *   /guides                   gpa and cgpa guides
+ *   /guides/how-to-calculate-gpa   how to calculate gpa
+ *   /guides/gpa-vs-cgpa            gpa vs cgpa
  *   /target-gpa-calculator    target gpa calculator
  *   /universities/<city>      gpa calculator for <city> universities
  *   /universities/<c>/<u>     <university> gpa calculator / cgpa calculator

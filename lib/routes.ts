@@ -9,8 +9,9 @@ export const routes = {
   about: () => "/about",
   contact: () => "/contact",
   targetPlanner: () => "/target-gpa-calculator",
-  howToCalculateGpa: () => "/how-to-calculate-gpa",
-  gpaVsCgpa: () => "/gpa-vs-cgpa",
+  guides: () => "/guides",
+  howToCalculateGpa: () => "/guides/how-to-calculate-gpa",
+  gpaVsCgpa: () => "/guides/gpa-vs-cgpa",
   city: (citySlug: string) => `/universities/${citySlug}`,
   university: (citySlug: string, universitySlug: string) =>
     `/universities/${citySlug}/${universitySlug}`,

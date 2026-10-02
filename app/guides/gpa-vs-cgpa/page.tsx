@@ -13,7 +13,7 @@ import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/schema";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 
 /**
- * GUIDE -> /gpa-vs-cgpa
+ * GUIDE -> /guides/gpa-vs-cgpa
  *
  * Targets "GPA vs CGPA", "difference between GPA and CGPA", "what is CGPA".
  * The one-sentence answer comes first, then a comparison table.
@@ -55,6 +55,7 @@ export default function GpaVsCgpaPage() {
             })} />
       <JsonLd data={breadcrumbJsonLd([
               { name: "Home", path: routes.home() },
+              { name: "Guides", path: routes.guides() },
               { name: "GPA vs CGPA", path: routes.gpaVsCgpa() },
             ])} />
 
@@ -63,6 +64,7 @@ export default function GpaVsCgpaPage() {
         description="GPA is your grade point average for one semester. CGPA is your cumulative grade point average across every semester you have completed."
         breadcrumbs={[
           { label: "Home", href: routes.home() },
+          { label: "Guides", href: routes.guides() },
           { label: "GPA vs CGPA", href: routes.gpaVsCgpa() },
         ]}
       />

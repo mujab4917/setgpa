@@ -51,7 +51,8 @@ separately, with how many URLs it found.
 | Page | Blocks |
 | --- | --- |
 | Home | Organization (with logo), WebSite, WebPage |
-| How to calculate GPA, GPA vs CGPA | Article (author, publisher, logo, image, dates), BreadcrumbList |
+| Guides hub (`/guides`) | CollectionPage, BreadcrumbList |
+| Each guide (`/guides/...`) | Article (author, publisher, logo, image, dates), BreadcrumbList |
 | Cities | BreadcrumbList |
 | A city | BreadcrumbList |
 | A university | WebPage, CollegeOrUniversity, BreadcrumbList |
@@ -106,3 +107,15 @@ Apple icon, the app icons and the share image.
 Edit the text in `data/site-content.ts` (home, cities, about, contact, target) or
 the builders in `lib/seo/metadata.ts` (cities and universities, generated from
 data). Titles are cut to 60 characters and descriptions to 155 automatically.
+
+## Guides
+
+- The hub is `/guides` (`app/guides/page.tsx`). Each guide lives at
+  `/guides/<name>`: `/guides/how-to-calculate-gpa` and `/guides/gpa-vs-cgpa`.
+- The old addresses `/how-to-calculate-gpa` and `/gpa-vs-cgpa` redirect
+  permanently (308) to the new ones; see `redirects()` in `next.config.ts`.
+- **To add a guide:** create `app/guides/<name>/page.tsx` (copy an existing one),
+  add its route in `lib/routes.ts`, add it to the `guides` list in
+  `data/guides.ts`, and add its route to `getStaticPageEntries()` in
+  `lib/seo/sitemap-data.ts`. It then appears on the hub page, in the footer and in
+  the sitemap.
