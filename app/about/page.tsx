@@ -20,9 +20,7 @@ import { buildWhatsAppLink, generalFeedbackMessage } from "@/lib/whatsapp";
  * these grade tables, and search engines reward sites that say plainly who is
  * behind the content and how it is produced.
  *
- * The counts are read from the database, so they never go out of date. The
- * "verified" count is shown on purpose: being open about how many tables have
- * been checked is exactly what makes the rest of the page believable.
+ * The counts are read from the database, so they never go out of date.
  *
  * All wording lives in data/site-content.ts -> aboutContent.
  */
@@ -37,7 +35,6 @@ export const revalidate = 3600;
 
 export default async function AboutPage() {
   const [cities, universities] = await Promise.all([getActiveCities(), getAllUniversitiesForSearch()]);
-  const verified = universities.filter((university) => university.isVerified).length;
 
   const [whatItDoes, whereData, whatItIsNot, howToHelp] = aboutContent.sections;
   const email = siteConfig.contactEmail.trim();
@@ -46,7 +43,6 @@ export default async function AboutPage() {
   const stats = [
     { value: String(cities.length), label: "cities" },
     { value: String(universities.length), label: "universities" },
-    { value: String(verified), label: "grade tables verified so far" },
     { value: "Free", label: "no account needed" },
   ];
 
@@ -72,7 +68,7 @@ export default async function AboutPage() {
 
       <Container className="py-7 sm:py-10">
         {/* ---------- At a glance ---------- */}
-        <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-4" aria-label="SetGPA at a glance">
+        <ul className="grid grid-cols-3 gap-2.5 sm:gap-4" aria-label="SetGPA at a glance">
           {stats.map((stat) => (
             <li key={stat.label} className="rounded-2xl border border-ink-900/10 bg-white p-3.5 sm:p-5">
               <p className="tabular font-[family-name:var(--font-display)] text-3xl font-extrabold leading-none text-ink-900 sm:text-4xl">

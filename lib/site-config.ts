@@ -71,9 +71,8 @@ export const siteConfig = {
  */
 export const socialLinks = [
   { name: "Facebook", href: "https://www.facebook.com/", icon: "facebook" },
-  { name: "Instagram", href: "https://www.instagram.com/", icon: "instagram" },
-  { name: "LinkedIn", href: "https://www.linkedin.com/", icon: "linkedin" },
-  { name: "X", href: "https://x.com/", icon: "x" },
+  { name: "Instagram", href: "https://www.instagram.com/setgpa", icon: "instagram" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/in/mujab-seo-analyst", icon: "linkedin" },
 ] as const;
 
 export type SocialIconName = (typeof socialLinks)[number]["icon"];

@@ -57,19 +57,6 @@ export function LinkedInIcon({ className = "" }: IconProps) {
   );
 }
 
-export function XIcon({ className = "" }: IconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-      className={`${base} ${className}`}
-    >
-      <path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.65l-5.21-6.82-5.96 6.82H1.69l7.73-8.84L1.25 2.25h6.82l4.71 6.23 5.46-6.23zm-1.16 17.52h1.83L7.08 4.13H5.12l11.96 15.64z" />
-    </svg>
-  );
-}
-
 export function WhatsAppIcon({ className = "" }: IconProps) {
   return (
     <svg
@@ -116,8 +103,6 @@ export function SocialIcon({
       return <InstagramIcon className={className} />;
     case "linkedin":
       return <LinkedInIcon className={className} />;
-    case "x":
-      return <XIcon className={className} />;
     default:
       return null;
   }
