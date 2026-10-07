@@ -17,11 +17,14 @@ export function TargetGpaTeaser({
   citySlug,
   universitySlug,
   universityName,
+  shortName,
   gpaScale,
 }: {
   citySlug: string;
   universitySlug: string;
   universityName: string;
+  /** Short name for the heading, so every university page has its own H2. */
+  shortName?: string;
   gpaScale: number;
 }) {
   const href = routes.targetPlannerFor({ citySlug, universitySlug });
@@ -36,7 +39,7 @@ export function TargetGpaTeaser({
         <div>
           <p className="text-sm font-bold text-marker-300">{targetTeaserContent.eyebrow}</p>
           <h2 id="target-planner-heading" className="mt-2 text-xl font-extrabold text-white sm:text-3xl">
-            {targetTeaserContent.heading}
+            {targetTeaserContent.heading.replace("{university}", shortName ?? universityName)}
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/75">
             {targetTeaserContent.body.replace("{university}", universityName)}

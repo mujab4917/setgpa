@@ -25,6 +25,7 @@ import {
   secondaryButtonClass,
 } from "@/components/calculators/calculator-ui";
 import { calculateGpa, findGradePoint } from "@/lib/calculators/gpa";
+import { gradeForMarks, hasMarksRanges } from "@/lib/calculators/marks";
 import type { GradingSystem } from "@/lib/calculators/types";
 import {
   formatGpa,
@@ -39,12 +40,14 @@ interface CourseRow {
   name: string;
   creditHours: string;
   grade: string;
+  /** Only used when the university publishes marks ranges. */
+  marks: string;
 }
 
 const STARTING_ROWS = 3;
 
 function makeRow(id: string): CourseRow {
-  return { id, name: "", creditHours: "", grade: "" };
+  return { id, name: "", creditHours: "", grade: "", marks: "" };
 }
 
 function makeInitialRows(): CourseRow[] {
@@ -67,6 +70,8 @@ export function GpaCalculator({
   shareUrl,
 }: GpaCalculatorProps) {
   const universityPath = parseUniversityPath(shareUrl);
+  // The Marks box only exists for universities that publish marks ranges.
+  const hasMarks = hasMarksRanges(gradingSystem.grades);
   const [rows, setRows] = useState<CourseRow[]>(makeInitialRows);
   // Errors only appear after the student presses "Calculate", so the form does
   // not shout at them while they are still typing.
@@ -103,6 +108,28 @@ export function GpaCalculator({
   function updateRow(id: string, field: keyof Omit<CourseRow, "id">, value: string) {
     setRows((current) =>
       current.map((row) => (row.id === id ? { ...row, [field]: value } : row)),
+    );
+  }
+
+  // Typing marks fills the grade from the university's marks ranges. A box
+  // that is cleared leaves the chosen grade alone; marks that cannot be
+  // graded clear it, so a stale grade never stays behind.
+  function updateMarks(id: string, value: string) {
+    const lookup = gradeForMarks(value, gradingSystem.grades);
+    setRows((current) =>
+      current.map((row) => {
+        if (row.id !== id) return row;
+        if (lookup.status === "ok") return { ...row, marks: value, grade: lookup.grade };
+        if (lookup.status === "invalid") return { ...row, marks: value, grade: "" };
+        return { ...row, marks: value };
+      }),
+    );
+  }
+
+  // Picking a grade by hand overrides the marks, so the two never disagree.
+  function updateGrade(id: string, value: string) {
+    setRows((current) =>
+      current.map((row) => (row.id === id ? { ...row, grade: value, marks: "" } : row)),
     );
   }
 
@@ -146,12 +173,20 @@ export function GpaCalculator({
         }}
         noValidate
       >
+        {hasMarks && (
+          <p className="mb-4 rounded-xl bg-brand-50 px-3 py-2 text-sm leading-relaxed text-ink-700">
+            Type your marks and the grade fills in from the {universityName} table. You can also pick a grade yourself.
+          </p>
+        )}
         <ul className="space-y-4">
           {rows.map((row, index) => {
             const rowResult = result.rows[index];
             const error = showErrors ? (rowResult?.error ?? null) : null;
             const leaving = leavingIds.includes(row.id);
             const gradePoint = findGradePoint(row.grade, gradingSystem);
+            const marksLookup = hasMarks
+              ? gradeForMarks(row.marks, gradingSystem.grades)
+              : ({ status: "empty" } as const);
 
             return (
               <li
@@ -160,8 +195,14 @@ export function GpaCalculator({
                   leaving ? "animate-row-out" : ""
                 } ${row.id === enteringId && !leaving ? "animate-row-in" : ""}`}
               >
-                <div className="grid grid-cols-[5rem_1fr_auto] items-end gap-2.5 sm:grid-cols-[1fr_7rem_8rem_auto] sm:gap-3">
-                  <div className="col-span-3 sm:col-span-1">
+                <div
+                  className={`grid items-end gap-2.5 sm:gap-3 ${
+                    hasMarks
+                      ? "grid-cols-2 sm:grid-cols-[1fr_6.5rem_6.5rem_8rem_auto]"
+                      : "grid-cols-[5rem_1fr_auto] sm:grid-cols-[1fr_7rem_8rem_auto]"
+                  }`}
+                >
+                  <div className={`${hasMarks ? "col-span-2" : "col-span-3"} sm:col-span-1`}>
                     <label className={fieldLabelClass} htmlFor={`${row.id}-name`}>
                       Course name (optional)
                     </label>
@@ -203,6 +244,28 @@ export function GpaCalculator({
                     />
                   </div>
 
+                  {hasMarks && (
+                    <div>
+                      <label className={fieldLabelClass} htmlFor={`${row.id}-marks`}>
+                        Marks
+                      </label>
+                      <input
+                        id={`${row.id}-marks`}
+                        type="number"
+                        inputMode="decimal"
+                        min={0}
+                        max={100}
+                        step="any"
+                        value={row.marks}
+                        onChange={(event) => updateMarks(row.id, event.target.value)}
+                        placeholder="78"
+                        aria-describedby={marksLookup.status === "invalid" ? `${row.id}-marks-error` : undefined}
+                        aria-invalid={marksLookup.status === "invalid" ? true : undefined}
+                        className={`${inputClass} ${marksLookup.status === "invalid" ? invalidInputClass : ""}`}
+                      />
+                    </div>
+                  )}
+
                   <div>
                     <label className={fieldLabelClass} htmlFor={`${row.id}-grade`}>
                       Grade
@@ -226,9 +289,7 @@ export function GpaCalculator({
                       <select
                         id={`${row.id}-grade`}
                         value={row.grade}
-                        onChange={(event) =>
-                          updateRow(row.id, "grade", event.target.value)
-                        }
+                        onChange={(event) => updateGrade(row.id, event.target.value)}
                         aria-invalid={error ? true : undefined}
                         className={`${inputClass} ${gradePoint !== null ? "pl-7" : ""} ${error ? `${invalidInputClass} animate-nudge` : ""}`}
                       >
@@ -256,6 +317,11 @@ export function GpaCalculator({
                   </div>
                 </div>
 
+                {marksLookup.status === "invalid" && (
+                  <p id={`${row.id}-marks-error`} className={rowErrorClass}>
+                    {marksLookup.message}
+                  </p>
+                )}
                 {error && <p className={rowErrorClass}>{error}</p>}
               </li>
             );

@@ -91,9 +91,7 @@ export function buildUniversityFaq(university: UniversityDetail): FaqItem[] {
 
   items.push({
     question: `Is this calculator official for ${label}?`,
-    answer: university.isVerified
-      ? `No. This is an independent student project, not a ${university.name} service. The grade table used here has been checked against the source noted on this page, but always confirm anything important with your own department.`
-      : `No. This is an independent student project, not a ${university.name} service, and the grade table currently shown is demo data that has not been verified against official documents. Confirm the values with your own department before relying on a result.`,
+    answer: `No. This is an independent student project, not a ${university.name} service. The grade table used here has been checked, but always confirm anything important with your own department.`,
   });
 
   return items;

@@ -70,7 +70,10 @@ export function MobileMenu({ whatsappHref }: { whatsappHref?: string | null }) {
         aria-expanded={open}
         aria-controls="mobile-menu-panel"
         aria-label={open ? "Close menu" : "Open menu"}
-        className={`flex h-10 items-center gap-2 rounded-full pl-4 pr-3.5 text-sm font-bold text-white shadow-[0_6px_14px_-6px_rgba(31,46,41,0.5)] transition-all duration-200 active:scale-95 ${
+        // relative + z-50 keeps the button ABOVE the dimmed backdrop (z-30).
+        // Without it the backdrop covered the button when the menu was open,
+        // so tapping the cross did nothing.
+        className={`relative z-50 flex h-10 items-center gap-2 rounded-full pl-4 pr-3.5 text-sm font-bold text-white shadow-[0_6px_14px_-6px_rgba(31,46,41,0.5)] transition-all duration-200 active:scale-95 ${
           open ? "bg-ink-900" : "bg-brand-600 hover:bg-brand-700"
         }`}
       >
@@ -97,11 +100,15 @@ export function MobileMenu({ whatsappHref }: { whatsappHref?: string | null }) {
       {open && (
         <>
           {/* Dims the page behind the menu; tapping it closes the menu. */}
-          <div aria-hidden="true" className="fixed inset-0 z-30 bg-ink-900/30" />
+          <div
+            aria-hidden="true"
+            onClick={() => setOpen(false)}
+            className="fixed inset-0 z-30 bg-ink-900/30"
+          />
 
           <div
             id="mobile-menu-panel"
-            className="animate-slide-down-fade absolute right-0 top-full z-40 mt-3 w-[min(21rem,calc(100vw-1.5rem))] overflow-hidden rounded-3xl border border-ink-900/10 bg-white shadow-[0_24px_60px_-20px_rgba(31,46,41,0.5)]"
+            className="animate-slide-down-fade absolute right-0 top-full z-40 mt-3 max-h-[calc(100dvh-5.5rem)] w-[min(21rem,calc(100vw-1.5rem))] overflow-y-auto rounded-3xl border border-ink-900/10 bg-white shadow-[0_24px_60px_-20px_rgba(31,46,41,0.5)]"
           >
             <nav aria-label="Mobile" className="p-2">
               <ul className="space-y-1">

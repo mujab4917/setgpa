@@ -9,6 +9,12 @@ import { footerContent, navContent } from "@/data/site-content";
 import { siteConfig } from "@/lib/site-config";
 import { buildWhatsAppLink, generalFeedbackMessage } from "@/lib/whatsapp";
 
+const footerLinkClass =
+  "inline-block py-1.5 text-white/70 transition-colors underline-offset-4 hover:text-white hover:underline sm:py-1";
+
+const contactButtonClass =
+  "inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-white/20 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-white/50 hover:bg-white/10 sm:w-auto sm:justify-start";
+
 /** Footer shown on every page. Server Component - no client JavaScript. */
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -17,7 +23,7 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-0 bg-ink-900 text-white/75">
-      <Container className="grid grid-cols-2 gap-x-6 gap-y-8 py-8 sm:gap-10 sm:py-12 lg:grid-cols-4">
+      <Container className="grid grid-cols-2 gap-x-6 gap-y-7 py-9 sm:gap-10 sm:py-12 lg:grid-cols-4">
         {/* ---------- Brand ---------- */}
         <div className="col-span-2 lg:col-span-1">
           <Image
@@ -25,14 +31,14 @@ export function SiteFooter() {
             alt={siteConfig.name}
             width={1200}
             height={277}
-            className="h-9 w-auto"
+            className="h-8 w-auto sm:h-9"
           />
 
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/65">
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-white/65 sm:mt-4">
             {footerContent.description}
           </p>
 
-          <SocialLinks className="mt-5" variant="dark" />
+          <SocialLinks className="mt-4 sm:mt-5" variant="dark" />
         </div>
 
         {/* ---------- Links ---------- */}
@@ -40,13 +46,10 @@ export function SiteFooter() {
           <p className="text-sm font-semibold text-white">
             {footerContent.quickLinksHeading}
           </p>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-2 text-sm sm:mt-3">
             {navContent.links.map((link) => (
               <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-white/65 transition-colors underline-offset-4 hover:text-white hover:underline"
-                >
+                <Link href={link.href} className={footerLinkClass}>
                   {link.label}
                 </Link>
               </li>
@@ -57,13 +60,10 @@ export function SiteFooter() {
         {/* ---------- Guides (internal links to the keyword pages) ---------- */}
         <div>
           <p className="text-sm font-semibold text-white">Guides</p>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-2 text-sm sm:mt-3">
             {guideLinks.map((link) => (
               <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-white/65 transition-colors underline-offset-4 hover:text-white hover:underline"
-                >
+                <Link href={link.href} className={footerLinkClass}>
                   {link.label}
                 </Link>
               </li>
@@ -76,41 +76,34 @@ export function SiteFooter() {
           <p className="text-sm font-semibold text-white">
             {footerContent.contactHeading}
           </p>
-          <ul className="mt-3 space-y-3 text-sm">
+          <div className="mt-3 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap lg:flex-col">
             {whatsappHref && (
-              <li>
-                <a
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-white/65 transition-colors underline-offset-4 hover:text-white hover:underline"
-                >
-                  <WhatsAppIcon />
-                  {footerContent.whatsappLabel}
-                </a>
-              </li>
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={contactButtonClass}
+              >
+                <WhatsAppIcon />
+                {footerContent.whatsappLabel}
+              </a>
             )}
             {email && (
-              <li>
-                <a
-                  href={`mailto:${email}`}
-                  className="inline-flex items-center gap-2 break-all text-white/65 transition-colors underline-offset-4 hover:text-white hover:underline"
-                >
-                  <MailIcon />
-                  {email}
-                </a>
-              </li>
+              <a href={`mailto:${email}`} className={`${contactButtonClass} break-all`}>
+                <MailIcon />
+                {email}
+              </a>
             )}
-          </ul>
+          </div>
 
-          <p className="mt-5 max-w-sm text-xs leading-relaxed text-white/45">
+          <p className="mt-4 max-w-sm text-xs leading-relaxed text-white/45 sm:mt-5">
             {footerContent.disclaimer}
           </p>
         </div>
       </Container>
 
       <div className="border-t border-white/10">
-        <Container className="py-5">
+        <Container className="py-4 sm:py-5">
           <p className="text-xs text-white/45">
             &copy; {year} {siteConfig.name}. {footerContent.rightsLabel}
           </p>

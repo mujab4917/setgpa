@@ -24,9 +24,9 @@ export const siteConfig = {
   ).replace(/\/$/, ""),
 
   /** Default <title> and meta description for pages that do not set their own. */
-  defaultMetaTitle: "GPA Calculator Pakistan: Free GPA & CGPA Calculator",
+  defaultMetaTitle: "GPA Calculator Pakistan: Free CGPA Calculator",
   defaultMetaDescription:
-    "Free GPA calculator and CGPA calculator for Pakistani universities. Pick your university, use its own grade table and get your GPA, CGPA and target grades.",
+    "Free GPA calculator and CGPA calculator for Pakistani universities. Pick your university and use its own grade table for GPA, CGPA and target grades.",
 
   /**
    * WhatsApp number in international format, digits only (no +, no spaces).

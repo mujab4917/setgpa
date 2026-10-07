@@ -8,11 +8,17 @@ import type { GradingSystem } from "@/lib/calculators/types";
 const modes = ["gpa", "cgpa"] as const;
 type Mode = (typeof modes)[number];
 
-export function UniversityCalculator(props: {
+export function UniversityCalculator({
+  shortName,
+  ...props
+}: {
   gradingSystem: GradingSystem;
   universityName: string;
+  /** Used in the section heading so every university page has its own H2. */
+  shortName?: string;
   shareUrl: string;
 }) {
+  const label = shortName ?? props.universityName;
   const [mode, setMode] = useState<Mode>("gpa");
   const id = useId();
   const tabs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -51,7 +57,7 @@ export function UniversityCalculator(props: {
         </div>
         <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-extrabold text-ink-900 sm:text-3xl">
-            {mode === "gpa" ? "Your semester, calculated." : "Your overall progress, calculated."}
+            {mode === "gpa" ? `Calculate your semester GPA at ${label}` : `Calculate your CGPA at ${label}`}
           </h2>
           <span className="rounded-full bg-marker-300 px-3 py-1 text-xs font-bold text-ink-900">
             {props.gradingSystem.gpaScale.toFixed(2)} GPA scale

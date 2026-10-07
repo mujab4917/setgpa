@@ -6,6 +6,7 @@
  */
 
 import { prisma } from "@/lib/db";
+import type { OverviewUniversity } from "@/lib/cities/grading-overview";
 import type {
   UniversityDetail,
   UniversityGradingListItem,
@@ -48,6 +49,31 @@ export async function getUniversitiesByCitySlug(
     citySlug: university.city.slug,
     cityName: university.city.name,
   }));
+}
+
+/**
+ * Every active university of one city with its grade table and profile
+ * fields. Feeds the "how grading differs in this city" section of the city
+ * page (lib/cities/grading-overview.ts).
+ */
+export async function getCityGradingOverview(citySlug: string): Promise<OverviewUniversity[]> {
+  const universities = await prisma.university.findMany({
+    where: { isActive: true, city: { slug: citySlug, isActive: true } },
+    orderBy: { name: "asc" },
+    select: {
+      name: true,
+      shortName: true,
+      slug: true,
+      sector: true,
+      universityType: true,
+      gradeRules: {
+        orderBy: { sortOrder: "asc" },
+        select: { grade: true, gradePoint: true },
+      },
+    },
+  });
+
+  return universities;
 }
 
 /**

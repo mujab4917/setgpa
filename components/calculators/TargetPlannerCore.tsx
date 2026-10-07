@@ -247,20 +247,18 @@ export function TargetPlannerCore({ gradingSystem, prefill, onPrefillConsumed }:
     <section
       id="target-planner"
       aria-labelledby={`${id}-heading`}
-      className="scroll-mt-24 rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-brand-50 p-5 sm:p-8"
+      className="scroll-mt-24 rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-brand-50 p-4 sm:p-8"
     >
-      <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-700">Plan your next move</p>
-      <h2 id={`${id}-heading`} className="mt-2 text-2xl font-bold text-ink-900">
+      <h2 id={`${id}-heading`} className="text-xl font-bold text-ink-900 sm:text-2xl">
         What GPA gets you there?
       </h2>
-      <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-700">
-        Set an overall CGPA goal, then plan it as one average or course by course.
+      <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-ink-700 sm:mt-2">
+        Set a CGPA goal, then plan it as one average or course by course.
       </p>
 
-      {/* ---------- Mode toggle ---------- */}
-      <div className="mt-6" role="radiogroup" aria-label={targetPlannerPageContent.modeHeading}>
-        <span className={sectionHeadingClass}>{targetPlannerPageContent.modeHeading}</span>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+      {/* ---------- Mode switch: two short buttons, the selected one explained below ---------- */}
+      <div className="mt-4 sm:mt-6" role="radiogroup" aria-label={targetPlannerPageContent.modeHeading}>
+        <div className="grid grid-cols-2 gap-1 rounded-full bg-violet-100/70 p-1">
           {targetPlannerPageContent.modeOptions.map((option) => {
             const selected = mode === option.key;
             return (
@@ -273,36 +271,23 @@ export function TargetPlannerCore({ gradingSystem, prefill, onPrefillConsumed }:
                   setMode(option.key as Mode);
                   setSubmitted(false);
                 }}
-                className={`flex cursor-pointer items-start gap-2.5 rounded-xl border p-3 text-left shadow-sm transition-all duration-200 ${
-                  selected
-                    ? "border-violet-600 bg-violet-50 shadow-md shadow-violet-600/10"
-                    : "border-ink-900/20 bg-white hover:-translate-y-0.5 hover:border-violet-400 hover:bg-violet-50 hover:shadow-md active:translate-y-0"
+                className={`min-h-11 cursor-pointer rounded-full px-2 text-[13px] font-bold leading-tight transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 sm:text-sm ${
+                  selected ? "bg-violet-700 text-white shadow-sm" : "text-violet-900 hover:bg-white"
                 }`}
               >
-                <span
-                  aria-hidden="true"
-                  className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                    selected ? "border-violet-600 bg-violet-600" : "border-ink-900/20 bg-white"
-                  }`}
-                >
-                  {selected && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
-                </span>
-                <span>
-                  <span className={`block text-sm font-semibold ${selected ? "text-violet-900" : "text-ink-900"}`}>
-                    {option.label}
-                    {selected && <span className="ml-2 text-[10px] font-bold uppercase tracking-wide text-violet-600">Selected</span>}
-                  </span>
-                  <span className="mt-0.5 block text-xs leading-relaxed text-ink-700">{option.description}</span>
-                </span>
+                {option.label}
               </button>
             );
           })}
         </div>
+        <p className="mt-2 text-xs leading-relaxed text-ink-700 sm:text-sm" aria-live="polite">
+          {targetPlannerPageContent.modeOptions.find((option) => option.key === mode)?.description}
+        </p>
       </div>
 
-      <form className="mt-6" onSubmit={handleSubmit} noValidate>
+      <form className="mt-5 sm:mt-6" onSubmit={handleSubmit} noValidate>
         {/* ---------- Shared fields ---------- */}
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-3.5 sm:gap-4 lg:grid-cols-4">
           <div>
             <label htmlFor={`${id}-current`} className={fieldLabelClass}>
               Current CGPA
@@ -402,10 +387,10 @@ export function TargetPlannerCore({ gradingSystem, prefill, onPrefillConsumed }:
         </div>
 
         {/* ---------- Preset goals ---------- */}
-        <div className="mt-6">
+        <div className="mt-5 sm:mt-6">
           <span className={sectionHeadingClass}>{targetPlannerPageContent.presetsHeading}</span>
-          <p className="mt-0.5 text-xs text-ink-700">{targetPlannerPageContent.presetsSubheading}</p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          <p className="mt-0.5 hidden text-xs text-ink-700 sm:block">{targetPlannerPageContent.presetsSubheading}</p>
+          <div className="mt-2.5 grid gap-2 sm:mt-3 sm:grid-cols-3 sm:gap-3">
             {targetPlannerPageContent.presets.map((preset) => {
               const value = (preset.ratio * scale).toFixed(2);
               const active = shared.target.trim() !== "" && Math.abs(Number(shared.target) - preset.ratio * scale) < 0.005;
@@ -416,7 +401,7 @@ export function TargetPlannerCore({ gradingSystem, prefill, onPrefillConsumed }:
                   type="button"
                   onClick={() => applyPreset(preset.ratio)}
                   aria-pressed={active}
-                  className={`relative cursor-pointer rounded-2xl border-2 bg-white p-4 text-left shadow-sm transition-all duration-200 ${
+                  className={`relative flex cursor-pointer items-center gap-3 rounded-2xl border-2 bg-white p-3 text-left shadow-sm transition-all duration-200 sm:block sm:p-4 ${
                     active
                       ? `${tone.selectedBorder} ${tone.selectedBg} shadow-md ${tone.selectedRing}`
                       : `border-ink-900/10 hover:-translate-y-0.5 ${tone.hoverBorder} hover:shadow-md active:translate-y-0`
@@ -425,22 +410,25 @@ export function TargetPlannerCore({ gradingSystem, prefill, onPrefillConsumed }:
                   {active && (
                     <span
                       aria-hidden="true"
-                      className={`absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full text-white ${tone.checkBg}`}
+                      className={`absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full text-white sm:right-3 sm:top-3 sm:h-5 sm:w-5 ${tone.checkBg}`}
                     >
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
                         <path d="M5 13l4 4L19 7" />
                       </svg>
                     </span>
                   )}
-                  <span className={`inline-flex h-9 w-9 items-center justify-center rounded-xl ${tone.iconWrap}`}>
+                  <span className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${tone.iconWrap}`}>
                     <PresetIcon icon={preset.icon} className="h-5 w-5" />
                   </span>
-                  <span className={`mt-3 block text-[11px] font-bold uppercase tracking-wide ${tone.tagText}`}>{preset.tag}</span>
-                  <span className="mt-0.5 block text-sm font-semibold text-ink-900">{preset.label}</span>
-                  <span className={`mt-1.5 block text-2xl font-bold tabular-nums ${tone.value}`}>
-                    {value} <span className="text-xs font-medium text-slate-400">/ {scale.toFixed(2)}</span>
+                  <span className="min-w-0 flex-1 sm:block">
+                    <span className={`block text-xs font-bold sm:mt-3 sm:text-[13px] ${tone.tagText}`}>{preset.tag}</span>
+                    <span className="mt-0.5 block text-sm font-semibold leading-snug text-ink-900">{preset.label}</span>
                   </span>
-                  <span className="mt-1.5 block text-xs leading-relaxed text-ink-700">{preset.description}</span>
+                  <span className={`shrink-0 pr-1 text-xl font-bold tabular-nums sm:mt-1.5 sm:block sm:pr-0 sm:text-2xl ${tone.value}`}>
+                    {value} <span className="hidden text-xs font-medium text-slate-400 sm:inline">/ {scale.toFixed(2)}</span>
+                  </span>
+                  {/* The longer explanation is for larger screens; on a phone the label says enough. */}
+                  <span className="mt-1.5 hidden text-xs leading-relaxed text-ink-700 sm:block">{preset.description}</span>
                 </button>
               );
             })}

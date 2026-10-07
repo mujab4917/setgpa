@@ -13,7 +13,7 @@ export function UniversityCard({ university }: { university: UniversityListItem 
   return (
     <Link
       href={routes.university(university.citySlug, university.slug)}
-      className="group relative flex h-full items-start gap-4 overflow-hidden rounded-2xl border border-ink-900/10 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-lg"
+      className="group relative flex h-full items-start gap-3.5 overflow-hidden rounded-2xl border border-ink-900/10 bg-white p-3.5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-lg sm:gap-4 sm:p-4"
     >
       {/* Coloured accent bar that grows down the left edge on hover, matching
           the city's colour so a university feels part of its city. */}
@@ -31,8 +31,8 @@ export function UniversityCard({ university }: { university: UniversityListItem 
         theme={theme}
       />
 
-      <span className="min-w-0">
-        <span className="block font-semibold text-ink-900 group-hover:text-brand-700">
+      <span className="min-w-0 flex-1">
+        <span className="block font-semibold leading-snug text-ink-900 group-hover:text-brand-700">
           {university.name}
         </span>
         <span className="mt-1 line-clamp-2 block text-sm leading-relaxed text-ink-700">
@@ -44,12 +44,16 @@ export function UniversityCard({ university }: { university: UniversityListItem 
               {university.campus}
             </span>
           )}
-          {!university.isVerified && (
-            <span className="rounded-full bg-amber-100 px-2.5 py-1 font-medium text-amber-800">
-              Demo data
-            </span>
-          )}
         </span>
+      </span>
+
+      <span
+        aria-hidden="true"
+        className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-800 transition-colors group-hover:bg-brand-600 group-hover:text-white"
+      >
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+          <path d="m6 3.5 4.5 4.5L6 12.5" />
+        </svg>
       </span>
     </Link>
   );

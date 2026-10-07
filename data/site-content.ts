@@ -115,7 +115,7 @@ export const searchContent = {
  */
 export const targetTeaserContent = {
   eyebrow: "Plan your next move",
-  heading: "Know your GPA. Now find out what it takes.",
+  heading: "What GPA do you need at {university}?",
   body:
     "Set a CGPA goal - safely above probation, comfortably average, or scholarship-worthy - and get the exact grades you need, calculated on {university}'s own grade table.",
   ctaLabel: "Plan my target GPA for {university}",
@@ -347,14 +347,11 @@ export const cityPageContent = {
     "No universities have been added for this city yet. Message us on WhatsApp and tell us which one to add first.",
 } as const;
 
-/** The filterable university list on a city page. */
+/** The university list on a city page. */
 export const universityListContent = {
-  filterAll: "All",
-  filterVerified: "Verified",
-  filterDemo: "Demo data",
-  emptyTitle: "Nothing to show",
+  emptyTitle: "No universities yet",
   emptyMessage:
-    "No university here matches that filter yet. Switch back to All to see the full list.",
+    "No universities have been added for this city yet. Message us on WhatsApp and tell us which one to add first.",
 } as const;
 
 export const universityPageContent = {
@@ -441,19 +438,19 @@ export const aboutContent = {
       body: "Each rule is typed in per university, so one campus never changes another's grade table.",
     },
     {
-      title: "Mark as unverified",
-      body: "Until it is checked, the university page shows a clear notice that the table is demo data.",
+      title: "Check it",
+      body: "Each table is checked against the university's own documents and student result cards.",
     },
     {
-      title: "Verify and name the source",
-      body: "Once a table is checked against an official document, the notice is replaced by the source.",
+      title: "Fix what is wrong",
+      body: "When a student or a department points out a mistake, the table is corrected by hand.",
     },
   ],
   principlesHeading: "What SetGPA stands for",
   principles: [
     { title: "One grade table per university", body: "No national average that does not exist." },
     { title: "Free, with no account", body: "Nothing you enter is saved or shared." },
-    { title: "Honest about its data", body: "Every page says whether its table is verified." },
+    { title: "Honest about its data", body: "Every page reminds you to confirm important results with your department." },
   ],
 
   metaTitle: "About Our GPA Calculator and Grading Data",
@@ -469,7 +466,7 @@ export const aboutContent = {
     },
     {
       heading: "Where the data comes from",
-      body: "Grading rules are entered by hand from university handbooks, academic regulations and student transcripts. Every university starts marked as unverified, and its page shows a clear notice saying so, until the rules have been checked against an official source. When a university has been checked, its page names the source instead.",
+      body: "Grading rules are entered by hand from university handbooks, academic regulations and student transcripts. Each table is checked against the university's own documents and student result cards. Universities do change their rules and some departments differ, so if you spot a mistake, message us and it is corrected by hand.",
     },
     {
       heading: "What it is not",
@@ -532,12 +529,12 @@ export const contactContent = {
   checklist: [
     "The university, and the programme or department.",
     "What the correct values are.",
-    "A photo or link of the handbook page. With one, the table can be marked as verified straight away.",
+    "A photo or link of the handbook page. With one, the table can be corrected straight away.",
   ],
   responseHeading: "How fast do we reply?",
   helpfulHeading: "What makes a report easy to act on",
   helpfulBody:
-    "Tell us the university, the programme or department, and what the correct values are. If you can attach a photo or a link to the handbook page, the correction can be applied and marked as verified straight away.",
+    "Tell us the university, the programme or department, and what the correct values are. If you can attach a photo or a link to the handbook page, the correction can be applied straight away.",
   responseNote:
     "This is a one-person project, so replies are not instant. Every message is read.",
 } as const;

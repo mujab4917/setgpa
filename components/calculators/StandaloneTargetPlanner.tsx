@@ -11,6 +11,7 @@
  * is identical to the embedded planner - both share TargetPlannerCore.
  */
 
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import type { GradingSystem } from "@/lib/calculators/types";
@@ -22,28 +23,37 @@ import { UniversityGradingPicker } from "./UniversityGradingPicker";
 
 interface StandaloneTargetPlannerProps {
   universities: UniversityGradingListItem[];
-  /** Set when a link (e.g. from a university page) arrives with ?city=&university= for an exact match. */
-  initialUniversity?: UniversityGradingListItem | null;
-  /** Set when the link also carried ?current=&target=, e.g. from a GPA result's "what do you need next" prompt. */
-  initialCurrent?: number;
-  initialTarget?: number;
 }
 
-export function StandaloneTargetPlanner({
-  universities,
-  initialUniversity = null,
-  initialCurrent,
-  initialTarget,
-}: StandaloneTargetPlannerProps) {
-  const [university, setUniversity] = useState<UniversityGradingListItem | null>(initialUniversity);
+/** A number from the URL, or undefined when it is missing or not a number. */
+function numberParam(value: string | null): number | undefined {
+  if (value === null) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+export function StandaloneTargetPlanner({ universities }: StandaloneTargetPlannerProps) {
+  // The page itself is static (so it is cached and opens fast); the link from
+  // a university page - ?city=&university=, and optionally &current=&target= -
+  // is read here in the browser instead. This component must sit inside a
+  // <Suspense> boundary for that reason.
+  const searchParams = useSearchParams();
+  const [university, setUniversity] = useState<UniversityGradingListItem | null>(() => {
+    const citySlug = searchParams.get("city");
+    const universitySlug = searchParams.get("university");
+    if (!citySlug || !universitySlug) return null;
+    return universities.find((u) => u.citySlug === citySlug && u.slug === universitySlug) ?? null;
+  });
   const [useManualScale, setUseManualScale] = useState(false);
   const [scale, setScale] = useState(4.0);
   const [customScale, setCustomScale] = useState("");
   // Set once, from the URL, and consumed by TargetPlannerCore on mount - not
   // meant to keep re-applying as the student edits the form afterward.
-  const [prefill] = useState<TargetPlannerPrefill | null>(() =>
-    initialCurrent !== undefined && initialTarget !== undefined ? { current: initialCurrent, target: initialTarget } : null,
-  );
+  const [prefill] = useState<TargetPlannerPrefill | null>(() => {
+    const current = numberParam(searchParams.get("current"));
+    const target = numberParam(searchParams.get("target"));
+    return current !== undefined && target !== undefined ? { current, target } : null;
+  });
 
   const effectiveScale = scale === -1 ? Number(customScale) : scale;
   const scaleValid = Number.isFinite(effectiveScale) && effectiveScale > 0;
@@ -58,16 +68,15 @@ export function StandaloneTargetPlanner({
     return (
       <section
         id="target-planner-setup"
-        className="scroll-mt-24 rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-brand-50 p-5 sm:p-8"
+        className="scroll-mt-24 rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-brand-50 p-4 sm:p-8"
       >
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-700">Plan your next move</p>
-        <h2 className="mt-2 text-2xl font-bold text-ink-900">What GPA gets you there?</h2>
+        <h2 className="text-xl font-bold text-ink-900 sm:text-2xl">What GPA gets you there?</h2>
 
         {!useManualScale ? (
-          <div className="mt-6">
+          <div className="mt-4 sm:mt-6">
             <h3 className="text-sm font-semibold text-ink-900">{targetPlannerPageContent.universityPickerHeading}</h3>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-ink-700">{targetPlannerPageContent.universityPickerBody}</p>
-            <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+            <div className="mt-3 rounded-2xl bg-white p-3.5 shadow-sm sm:mt-4 sm:p-5">
               <UniversityGradingPicker universities={universities} onSelect={setUniversity} />
             </div>
             <button
@@ -137,11 +146,11 @@ export function StandaloneTargetPlanner({
 
   return (
     <div>
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-violet-100 bg-white px-4 py-3 text-sm">
-        <span className="font-medium text-ink-700">
+      <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-violet-100 bg-white px-3.5 py-2.5 text-sm sm:px-4 sm:py-3">
+        <span className="min-w-0 font-medium text-ink-700">
           Planning for{" "}
           <strong className="font-semibold text-ink-900">
-            {university ? university.name : `a ${effectiveScale.toFixed(2)} scale`}
+            {university ? (university.shortName ?? university.name) : `a ${effectiveScale.toFixed(2)} scale`}
           </strong>
         </span>
         <button
@@ -150,9 +159,9 @@ export function StandaloneTargetPlanner({
             setUniversity(null);
             setUseManualScale(false);
           }}
-          className="font-semibold text-violet-700 hover:text-violet-800 hover:underline"
+          className="shrink-0 py-1 font-semibold text-violet-700 hover:text-violet-800 hover:underline"
         >
-          {university ? targetPlannerPageContent.changeUniversityLabel : "Change scale"}
+          {university ? "Change" : "Change scale"}
         </button>
       </div>
       <TargetPlannerCore gradingSystem={gradingSystem} prefill={prefill} />

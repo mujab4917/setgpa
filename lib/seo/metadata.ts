@@ -5,9 +5,11 @@
  * Graph tags through these functions, so the rules live in one file.
  *
  * RULES ENFORCED HERE
- *   - Titles are at most 60 characters and put the keyword first. The brand
- *     name is added only when it still fits.
- *   - Descriptions are at most 155 characters, cut on a word boundary.
+ *   - Titles are at most 60 characters AND about 555 px wide (Google cuts by
+ *     pixels), and put the keyword first. The brand name is added only when
+ *     it still fits.
+ *   - Descriptions are at most 155 characters and about 970 px wide, cut on a
+ *     word boundary.
  *   - Titles and descriptions for cities and universities are GENERATED from
  *     live data (name, grade scale, top grade). The generic text stored in the
  *     database columns by the seed is deliberately ignored, so one change here
@@ -25,7 +27,14 @@
 
 import type { Metadata } from "next";
 
+import { cityFocus, universityFocus } from "@/data/focus-pages";
 import { formatGpa } from "@/lib/calculators/validation";
+import {
+  DESCRIPTION_MAX_PX,
+  TITLE_MAX_PX,
+  descriptionPixelWidth,
+  titlePixelWidth,
+} from "@/lib/seo/pixel-width";
 import { siteConfig } from "@/lib/site-config";
 import { routes } from "@/lib/routes";
 import type { CityDetail, UniversityDetail } from "@/types/domain";
@@ -41,24 +50,51 @@ export function absoluteUrl(path: string): string {
   return `${siteConfig.url}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
-/** Cuts text to `max` characters on a word boundary. */
-function trimToLength(text: string, max: number): string {
+/**
+ * Cuts text on a word boundary until it fits BOTH the character limit and the
+ * pixel limit. Google truncates by pixels, so wide letters (M, W, O) can
+ * overflow a text that is within the character limit.
+ */
+function trimToFit(text: string, maxChars: number, maxPx: number, measure: (text: string) => number): string {
   const clean = text.replace(/\s+/g, " ").trim();
-  if (clean.length <= max) return clean;
-  const cut = clean.slice(0, max - 1);
-  const lastSpace = cut.lastIndexOf(" ");
-  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[ ,;:-]+$/, "")}…`;
+  if (clean.length <= maxChars && measure(clean) <= maxPx) return clean;
+
+  const words = clean.split(" ");
+  while (words.length > 1) {
+    words.pop();
+    const candidate = `${words.join(" ").replace(/[ ,;:-]+$/, "")}…`;
+    if (candidate.length <= maxChars && measure(candidate) <= maxPx) return candidate;
+  }
+  return clean.slice(0, maxChars - 1);
 }
 
-/** "<keyword title> | SetGPA" when it fits in 60 characters, else just the title. */
+/**
+ * "<keyword title> | SetGPA" when it fits in 60 characters and 555 px. When it
+ * does not, the brand is dropped (the keyword matters more than the brand in
+ * a search result), and only then is the title itself shortened.
+ */
 export function fitTitle(base: string, withBrand = true): string {
   const branded = `${base} | ${siteConfig.name}`;
-  if (withBrand && branded.length <= TITLE_MAX) return branded;
-  return trimToLength(base, TITLE_MAX);
+  if (withBrand && branded.length <= TITLE_MAX && titlePixelWidth(branded) <= TITLE_MAX_PX) {
+    return branded;
+  }
+  return trimToFit(base, TITLE_MAX, TITLE_MAX_PX, titlePixelWidth);
 }
 
 export function fitDescription(text: string): string {
-  return trimToLength(text, DESCRIPTION_MAX);
+  return trimToFit(text, DESCRIPTION_MAX, DESCRIPTION_MAX_PX, descriptionPixelWidth);
+}
+
+/**
+ * Picks the first description (longest first) that fits without being cut.
+ * Cutting with "…" reads badly in a search result, so templates offer shorter
+ * wordings instead; the last one is trimmed only if even it is too wide.
+ */
+function firstDescriptionThatFits(variants: string[]): string {
+  const fits = variants.find(
+    (text) => text.length <= DESCRIPTION_MAX && descriptionPixelWidth(text) <= DESCRIPTION_MAX_PX,
+  );
+  return fits ?? fitDescription(variants[variants.length - 1]);
 }
 
 interface PageMetadataInput {
@@ -140,17 +176,25 @@ export function buildHomeMetadata(): Metadata {
 /** City page metadata. Primary keyword: "gpa calculator for <city> universities". */
 export function buildCityMetadata(city: CityDetail, universityNames: string[] = []): Metadata {
   const count = universityNames.length;
-  const examples = universityNames.slice(0, 3).join(", ");
+  const noun = count === 1 ? "university" : "universities";
 
-  const description =
+  // Name as many universities as fit, then fall back to fewer.
+  const variants =
     count > 0
-      ? `Find your ${city.name} university and use its GPA and CGPA calculator. ${count} ${
-          count === 1 ? "university" : "universities"
-        } with their own grade tables, including ${examples}.`
-      : `Find your university in ${city.name} and calculate your GPA or CGPA with its own grade table.`;
+      ? [3, 2, 1, 0].map((named) => {
+          const names = universityNames.slice(0, Math.min(named, count));
+          const list =
+            names.length === 0
+              ? ""
+              : `, including ${names.length > 1 ? `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}` : names[0]}`;
+          return `GPA and CGPA calculators for ${count} ${city.name} ${noun}${list}. Each one uses its own grade table.`;
+        })
+      : [`Find your university in ${city.name} and calculate your GPA or CGPA with its own grade table.`];
+  const focus = cityFocus[city.slug];
+  const description = firstDescriptionThatFits(focus?.metaDescriptions ?? variants);
 
   return buildPageMetadata({
-    title: `GPA Calculator for ${city.name} Universities`,
+    title: focus?.metaTitle ?? `GPA Calculator for ${city.name} Universities`,
     description,
     path: routes.city(city.slug),
   });
@@ -172,10 +216,19 @@ export function buildUniversityMetadata(university: UniversityDetail): Metadata 
   const scale = formatGpa(university.gpaScale);
   const gradeFact = top ? ` (${top.grade} = ${formatGpa(top.gradePoint)})` : "";
 
-  const description = `Free ${label} GPA calculator and CGPA calculator for ${university.city.name} students. Uses the ${scale}-point grade table${gradeFact}, with the formulas explained.`;
+  const intro = `Free ${label} GPA calculator and CGPA calculator for ${university.city.name} students.`;
+  const focus = universityFocus[`${university.city.slug}/${university.slug}`];
+  const description = firstDescriptionThatFits(
+    focus?.metaDescriptions ?? [
+      `${intro} Uses the ${scale}-point grade table${gradeFact}, with the formulas explained.`,
+      `${intro} Uses the ${scale}-point grade table${gradeFact}.`,
+      `${intro} Uses its own ${scale}-point grade table.`,
+      intro,
+    ],
+  );
 
   return buildPageMetadata({
-    title,
+    title: focus?.metaTitle ?? title,
     description,
     path: routes.university(university.city.slug, university.slug),
     ogTitle: `${label} GPA & CGPA Calculator`,

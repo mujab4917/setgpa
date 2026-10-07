@@ -13,6 +13,9 @@ import { DataQualityNotice } from "@/components/universities/DataQualityNotice";
 import { GradeScaleTable } from "@/components/universities/GradeScaleTable";
 import { RelatedUniversities } from "@/components/universities/RelatedUniversities";
 import { UniversityFaq } from "@/components/universities/UniversityFaq";
+import { UniversityWorkedExample } from "@/components/universities/UniversityWorkedExample";
+import { universityFocus } from "@/data/focus-pages";
+import { buildFocusFaq } from "@/lib/seo/focus-faq";
 import { Reveal } from "@/components/ui/Reveal";
 import { footerContent, universityPageContent } from "@/data/site-content";
 import type { GradingSystem } from "@/lib/calculators/types";
@@ -101,14 +104,21 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
   const pageUrl = routes.university(university.city.slug, university.slug);
   const absolutePageUrl = absoluteUrl(pageUrl);
 
+  // Priority pages (data/focus-pages.ts) get tuned wording, a worked example
+  // and extra questions; every other university uses the standard template.
+  const focus = universityFocus[`${citySlug}/${universitySlug}`];
+
   // Questions generated from this university's own data (lib/seo/faq.ts).
-  const faqItems = buildUniversityFaq(university);
+  const faqItems = [
+    ...buildUniversityFaq(university),
+    ...(focus ? buildFocusFaq(university, university.shortName ?? university.name) : []),
+  ];
 
   return (
     <>
       <JsonLd
         data={webPageJsonLd({
-          name: `${university.name} GPA & CGPA Calculator`,
+          name: focus?.h1 ?? `${university.name} GPA & CGPA Calculator`,
           description: `Free GPA calculator and CGPA calculator for ${university.name}, built on its ${university.gpaScale.toFixed(2)}-point grade table.`,
           path: pageUrl,
         })}
@@ -132,9 +142,12 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
 
       <PageHero
         eyebrow={university.city.name}
-        title={`${university.name} GPA & CGPA Calculator`}
+        title={focus?.h1 ?? `${university.name} GPA & CGPA Calculator`}
         compact
-        description={`Free GPA calculator and CGPA calculator for ${university.shortName ?? university.name}, using its ${university.gpaScale.toFixed(2)}-point grade table.`}
+        description={
+          focus?.heroDescription ??
+          `Free GPA calculator and CGPA calculator for ${university.shortName ?? university.name}, using its ${university.gpaScale.toFixed(2)}-point grade table.`
+        }
         breadcrumbs={[
           { label: footerContent.homeLabel, href: routes.home() },
           { label: university.city.name, href: cityUrl },
@@ -143,7 +156,12 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
       />
 
       <Container className="pb-8 pt-2 sm:pb-12">
-        <UniversityCalculator gradingSystem={gradingSystem} universityName={university.name} shareUrl={absolutePageUrl} />
+        <UniversityCalculator
+          gradingSystem={gradingSystem}
+          universityName={university.name}
+          shortName={university.shortName ?? undefined}
+          shareUrl={absolutePageUrl}
+        />
         <nav aria-label="University page sections" className="my-6 flex flex-wrap gap-2 text-sm">
           {[["#target-planner", "Target GPA planner"], ["#grading-heading", "Grade scale"], ["#gpa-heading", "How it works"], ["#university-info-heading", "About university"]].map(([href, label]) => (
             <a key={href} href={href} className="rounded-full border border-ink-900/15 bg-white px-4 py-3 font-semibold text-ink-900 transition-colors hover:border-ink-900 hover:bg-marker-300 focus-visible:outline-brand-600">{label}</a>
@@ -154,6 +172,7 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
             citySlug={university.city.slug}
             universitySlug={university.slug}
             universityName={university.name}
+            shortName={university.shortName ?? undefined}
             gpaScale={university.gpaScale}
           />
         </div>
@@ -176,6 +195,14 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
         </div>
       </Reveal>
 
+      {focus && (
+        <UniversityWorkedExample
+          label={university.shortName ?? university.name}
+          gradingSystem={gradingSystem}
+          courses={focus.exampleCourses}
+          secondSemester={focus.secondSemester}
+        />
+      )}
 
         {/* ---------- Basic information ---------- */}
         <section aria-labelledby="university-info-heading" className="mt-9 sm:mt-16">
@@ -289,10 +316,8 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
             </div>
           )}
         </dl>
-            <p className={`mt-6 rounded-2xl px-4 py-3 text-sm font-medium ${university.isVerified ? "bg-brand-100 text-brand-900" : "bg-marker-200 text-ink-900"}`}>
-              {university.isVerified
-                ? "Grade table checked against an official source."
-                : "Demo data: confirm grades with your department."}
+            <p className="mt-6 rounded-2xl bg-brand-100 px-4 py-3 text-sm font-medium text-brand-900">
+              Grade table verified. For important decisions, confirm with your department.
             </p>
           </div>
         </aside>

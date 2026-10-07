@@ -11,6 +11,22 @@ const nextConfig: NextConfig = {
       { source: "/gpa-vs-cgpa", destination: "/guides/gpa-vs-cgpa", permanent: true },
     ];
   },
+  // Security headers on EVERY response, including server-rendered pages and
+  // /_next/image. netlify.toml sets the same headers, but Netlify only applies
+  // those to static files, so the pages themselves were going out without them.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
+  },
   // Modern image formats for any logos you add later under /public.
   images: {
     remotePatterns: [{ protocol: "https", hostname: "upload.wikimedia.org", pathname: "/wikipedia/commons/**" }],

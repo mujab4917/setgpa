@@ -399,19 +399,21 @@ export const punjabUniversities: SeedUniversity[] = [
     // that correcting it can never affect another university.
     scale: "simple",
     customGrades: [
-      { grade: "A+", gradePoint: 4.0 },
-      { grade: "A", gradePoint: 3.7 },
-      { grade: "B+", gradePoint: 3.4 },
-      { grade: "B", gradePoint: 3.0 },
-      { grade: "B-", gradePoint: 2.5 },
-      { grade: "C+", gradePoint: 2.0 },
-      { grade: "C", gradePoint: 1.5 },
-      { grade: "D", gradePoint: 1.0 },
-      { grade: "F", gradePoint: 0.0 },
+      // Marks bands are 5 marks wide: D 49.5 to 54.5, C 54.5 to 59.5, and so on
+      // up to A 79.5 to 84.5; above 84.5 is A+ and below 49.5 is F.
+      { grade: "A+", gradePoint: 4.0, minPercentage: 84.5, maxPercentage: 100 },
+      { grade: "A", gradePoint: 3.7, minPercentage: 79.5, maxPercentage: 84.5 },
+      { grade: "B+", gradePoint: 3.4, minPercentage: 74.5, maxPercentage: 79.5 },
+      { grade: "B", gradePoint: 3.0, minPercentage: 69.5, maxPercentage: 74.5 },
+      { grade: "B-", gradePoint: 2.5, minPercentage: 64.5, maxPercentage: 69.5 },
+      { grade: "C+", gradePoint: 2.0, minPercentage: 59.5, maxPercentage: 64.5 },
+      { grade: "C", gradePoint: 1.5, minPercentage: 54.5, maxPercentage: 59.5 },
+      { grade: "D", gradePoint: 1.0, minPercentage: 49.5, maxPercentage: 54.5 },
+      { grade: "F", gradePoint: 0.0, minPercentage: 0, maxPercentage: 49.5 },
     ],
     verified: true,
     sourceNote:
-      "Published University of Gujrat grading references, cross-checked against a second source for the grade letters and percentage bands, and confirmed by a student report.",
+      "Published University of Gujrat grading references, cross-checked against a second source for the grade letters and percentage bands, and confirmed by a student report. The marks bands were confirmed by a University of Gujrat student from the result card.",
     established: 2004,
     sector: "Public",
     type: "General",
