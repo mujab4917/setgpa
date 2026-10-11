@@ -76,6 +76,68 @@ export async function getCityGradingOverview(citySlug: string): Promise<Overview
   return universities;
 }
 
+/** One distinct grade-point value for a grade, and the universities that use it. */
+export interface GradeSpreadItem {
+  gradePoint: number;
+  /** How many universities give this grade this value. */
+  count: number;
+  /** Up to two universities that do, preferred ones first. */
+  examples: string[];
+}
+
+/**
+ * How the SAME letter grade is scored across universities: each distinct
+ * grade-point value, how many universities use it, and a couple of names.
+ *
+ * Drives the home page's "the same grade is not worth the same points"
+ * comparison, so it shows the real tables instead of made-up scales and stays
+ * right when a table changes.
+ *
+ * `preferredSlugs` are well-known universities to name first when several share
+ * a value. The most widely used values are kept, shown lowest to highest.
+ */
+export async function getGradeSpread(
+  grade: string,
+  preferredSlugs: string[] = [],
+  maxValues = 4,
+): Promise<GradeSpreadItem[]> {
+  const rows = await prisma.gradeRule.findMany({
+    where: {
+      grade,
+      university: { isActive: true, city: { isActive: true } },
+    },
+    select: {
+      gradePoint: true,
+      university: { select: { slug: true, name: true, shortName: true } },
+    },
+  });
+
+  const byValue = new Map<number, { slug: string; label: string }[]>();
+  for (const row of rows) {
+    const list = byValue.get(row.gradePoint) ?? [];
+    list.push({ slug: row.university.slug, label: row.university.shortName ?? row.university.name });
+    byValue.set(row.gradePoint, list);
+  }
+
+  const rank = (slug: string) => {
+    const index = preferredSlugs.indexOf(slug);
+    return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+  };
+
+  return [...byValue.entries()]
+    .map(([gradePoint, universities]) => ({
+      gradePoint,
+      count: universities.length,
+      examples: [...universities]
+        .sort((a, b) => rank(a.slug) - rank(b.slug) || a.label.localeCompare(b.label))
+        .slice(0, 2)
+        .map((u) => u.label),
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, maxValues)
+    .sort((a, b) => a.gradePoint - b.gradePoint);
+}
+
 /**
  * One university page, including its grade table.
  * Returns null when the city or the university does not exist.

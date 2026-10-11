@@ -925,3 +925,72 @@
   .animate-marquee { animation: none !important; }
   .marker-draw { background-size: 100% 0.42em; animation: none !important; }
 }
+
+/* ---------- Primary call-to-action button (home "Try it" section) ---------- */
+
+/* A soft ring that expands and fades behind the button, now and then, so the
+   eye is drawn to it without the button itself ever jumping around. */
+@keyframes cta-ring {
+  0% { box-shadow: 0 0 0 0 rgba(58, 116, 89, 0.32); }
+  70%, 100% { box-shadow: 0 0 0 9px rgba(58, 116, 89, 0); }
+}
+
+.cta-ring {
+  animation: cta-ring 2.8s ease-out infinite;
+}
+
+/* A light band that sweeps across the button when it is hovered or focused. */
+.cta-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+  transform: translateX(-120%) rotate(8deg);
+  pointer-events: none;
+}
+
+.group:hover .cta-sheen,
+.group:focus-visible .cta-sheen {
+  animation: sheen-sweep 0.9s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-ring,
+  .group:hover .cta-sheen,
+  .group:focus-visible .cta-sheen { animation: none !important; }
+}
+
+/* ---------- Grade explorer bars (home page) ---------- */
+
+/* Bars sit empty until the explorer is on screen (data-inview), then grow once.
+   Changing the grade remounts the bars, which replays the growth. */
+@keyframes spread-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.spread-bar {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+[data-inview="true"] .spread-bar {
+  animation: spread-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 120ms + 150ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spread-bar {
+    transform: none;
+    animation: none !important;
+  }
+}
+/* City cards (home page): the bar that compares a city's university count with the biggest city's. */
+.city-bar {
+  transform-origin: left center;
+  animation: spread-grow 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 45ms + 250ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .city-bar { animation: none !important; }
+}

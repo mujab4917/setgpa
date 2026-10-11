@@ -2,6 +2,7 @@ import { CampusScene } from "@/components/universities/CampusScene";
 import { cityPhotos } from "@/data/place-photos";
 import { CityArtwork } from "@/components/cities/CityArtwork";
 import { CityGradingGuide } from "@/components/cities/CityGradingGuide";
+import { OtherCities } from "@/components/cities/OtherCities";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,7 +21,7 @@ import {
   fillTemplate,
   footerContent,
 } from "@/data/site-content";
-import { getActiveCitySlugs, getCityBySlug } from "@/lib/queries/cities";
+import { getActiveCities, getActiveCitySlugs, getCityBySlug } from "@/lib/queries/cities";
 import {
   getCityGradingOverview,
   getUniversitiesByCitySlug,
@@ -79,10 +80,11 @@ export default async function CityPage({ params }: CityPageProps) {
   const { citySlug } = await params;
 
   // Load the city and its universities together.
-  const [city, universities, gradingOverview] = await Promise.all([
+  const [city, universities, gradingOverview, allCities] = await Promise.all([
     getCityBySlug(citySlug),
     getUniversitiesByCitySlug(citySlug),
     getCityGradingOverview(citySlug),
+    getActiveCities(),
   ]);
 
   // Unknown or inactive city -> show the 404 page.
@@ -177,6 +179,8 @@ export default async function CityPage({ params }: CityPageProps) {
         <CampusScene key={city.slug} citySlug={city.slug} cityName={city.name} photo={cityPhotos[city.slug]} />
         {/* The focus intro replaced the description at the top, so show it here instead. */}
         {focus && <p className="max-w-3xl text-sm leading-relaxed text-ink-700">{city.description}</p>}
+
+        <OtherCities cities={allCities} currentSlug={city.slug} />
         <WhatsAppContact className="mt-8 sm:mt-10" message={generalFeedbackMessage()} />
       </Container>
     </>

@@ -89,7 +89,7 @@ export default async function UniversityPage({ params }: UniversityPageProps) {
   // Both queries run at the same time instead of one after the other.
   const [university, related] = await Promise.all([
     getUniversityBySlug(citySlug, universitySlug),
-    getRelatedUniversities(citySlug, universitySlug),
+    getRelatedUniversities(citySlug, universitySlug, 40),
   ]);
 
   if (!university) notFound();

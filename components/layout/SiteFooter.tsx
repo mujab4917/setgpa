@@ -23,7 +23,7 @@ export function SiteFooter() {
 
   return (
     <footer className="mt-0 bg-ink-900 text-white/75">
-      <Container className="grid grid-cols-2 gap-x-6 gap-y-7 py-9 sm:gap-10 sm:py-12 lg:grid-cols-4">
+      <Container className="grid grid-cols-2 gap-x-6 gap-y-7 py-9 sm:gap-10 sm:py-12 lg:grid-cols-[1.15fr_0.8fr_1fr_1.6fr]">
         {/* ---------- Brand ---------- */}
         <div className="col-span-2 lg:col-span-1">
           <Image
@@ -89,7 +89,7 @@ export function SiteFooter() {
               </a>
             )}
             {email && (
-              <a href={`mailto:${email}`} className={`${contactButtonClass} break-all`}>
+              <a href={`mailto:${email}`} className={`${contactButtonClass} [overflow-wrap:anywhere]`}>
                 <MailIcon />
                 {email}
               </a>
@@ -101,6 +101,7 @@ export function SiteFooter() {
           </p>
         </div>
       </Container>
+
 
       <div className="border-t border-white/10">
         <Container className="py-4 sm:py-5">

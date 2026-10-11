@@ -23,7 +23,6 @@ export function UniversityList({
   universities: UniversityListItem[];
 }) {
   const [expanded, setExpanded] = useState(false);
-  const shown = expanded ? universities : universities.slice(0, PAGE_SIZE);
 
   if (universities.length === 0) {
     return (
@@ -36,11 +35,14 @@ export function UniversityList({
 
   return (
     <div>
+      {/* Every university is in the page from the start. The ones past the first
+          dozen are only hidden with CSS until "Show all" is pressed, so search
+          engines (which never press buttons) still find every link. */}
       <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-        {shown.map((university, index) => (
+        {universities.map((university, index) => (
           <li
             key={university.id}
-            className="animate-fade-up"
+            className={index >= PAGE_SIZE && !expanded ? "hidden" : "animate-fade-up"}
             style={{ animationDelay: `${Math.min(index, 8) * 60}ms` }}
           >
             <UniversityCard university={university} />

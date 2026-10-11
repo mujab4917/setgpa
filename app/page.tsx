@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { FeaturedCitiesGrid } from "@/components/cities/FeaturedCitiesGrid";
+import { CityExplorer } from "@/components/cities/CityExplorer";
 import { WhatsAppContact } from "@/components/feedback/WhatsAppContact";
-import { BentoFeatures } from "@/components/homepage/BentoFeatures";
+import { GradeExplorer } from "@/components/homepage/GradeExplorer";
 import { HeroFloaters } from "@/components/homepage/HeroFloaters";
 import { HeroGradebook } from "@/components/homepage/HeroGradebook";
 import { UniversityTicker } from "@/components/homepage/UniversityTicker";
@@ -22,7 +22,8 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { organizationJsonLd, webPageJsonLd, websiteJsonLd } from "@/lib/seo/schema";
 import { cityPhotos, pickUniversitiesWithPhotos } from "@/data/place-photos";
 import { getActiveCities } from "@/lib/queries/cities";
-import { getAllUniversitiesForSearch } from "@/lib/queries/universities";
+import { getAllUniversitiesForSearch, getGradeSpread } from "@/lib/queries/universities";
+import { getRegion } from "@/lib/regions";
 import { routes } from "@/lib/routes";
 import { buildHomeMetadata } from "@/lib/seo/metadata";
 import { generalFeedbackMessage } from "@/lib/whatsapp";
@@ -39,19 +40,36 @@ export const metadata: Metadata = buildHomeMetadata();
 // Rebuild this page at most once an hour; city data changes rarely.
 export const revalidate = 3600;
 
-// How many cities the homepage is willing to reveal via "show more" before it
-// hands off to the full /cities page. Kept well short of the full list so the
-// homepage never turns into a second copy of that page.
-const CITY_POOL_SIZE = 9;
-
 export default async function HomePage() {
-  const [cities, universities] = await Promise.all([
+  // Well-known universities are named first when several share the same value.
+  const preferred = ["fast-nuces", "lums", "comsats-lahore", "university-of-lahore", "punjab-university"];
+  const explorerGrades = ["A", "A-", "B+", "B", "C+"];
+
+  const [cities, universities, ...spreadResults] = await Promise.all([
     getActiveCities(),
     getAllUniversitiesForSearch(),
+    ...explorerGrades.map((grade) => getGradeSpread(grade, preferred)),
   ]);
+  const gradeSpreads = explorerGrades.map((grade, index) => ({ grade, items: spreadResults[index] }));
 
-  const cityPool = cities.slice(0, CITY_POOL_SIZE);
-
+  // City posters: every city once, with the province it belongs to and which
+  // filter tab it sits under (the three big provinces, then "Islamabad & more").
+  const mainRegions = ["Punjab", "Sindh", "Khyber Pakhtunkhwa"];
+  const posters = cities
+    .filter((city) => city.universityCount > 0)
+    .map((city) => {
+      const region = getRegion(city.slug);
+      return {
+        slug: city.slug,
+        name: city.name,
+        universityCount: city.universityCount,
+        region,
+        group: mainRegions.includes(region) ? region : "Islamabad & more",
+      };
+    });
+  const posterGroups = [...mainRegions, "Islamabad & more"].filter((group) =>
+    posters.some((poster) => poster.group === group),
+  );
   // Universities that have a real, licensed campus photo become the showcase
   // carousel below. Anything without one simply never appears there - no
   // stock photo is ever invented for a campus that doesn't have a curated shot.
@@ -170,9 +188,11 @@ export default async function HomePage() {
       <UniversityTicker names={tickerNames} />
 
       {/* ---------- Try it ---------- */}
-      <section aria-labelledby="try-heading" className="py-9 sm:py-12">
+      {/* overflow-x-clip: the gradebook's stamp starts each re-stamp at 1.8x its size, which for a
+          moment reaches past the screen edge on a phone; clipping stops the page scrolling sideways. */}
+      <section aria-labelledby="try-heading" className="overflow-x-clip py-9 sm:py-12">
         <Container>
-          <div className="grid items-center gap-7 sm:gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
+          <div className="grid items-center gap-10 sm:gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
             <Reveal>
               <h2 id="try-heading" className="text-2xl font-bold text-ink-900 sm:text-5xl sm:leading-[1.05]">
                 Try it before you even pick a university.
@@ -181,12 +201,39 @@ export default async function HomePage() {
                 Tap a grade and watch the semester GPA recount. Your own university page works the same way, with
                 its real grade table and your own courses.
               </p>
-              <Link
-                href={routes.cities()}
-                className="mt-4 inline-flex items-center rounded-full bg-ink-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-700 sm:mt-8 sm:px-7 sm:py-3.5 sm:text-base"
-              >
-                Find your university
-              </Link>
+              {/* The one button this section is about: a soft ring pulses behind it, a
+                  light band sweeps across it on hover, and the arrow slides and turns. */}
+              <MagneticButton className="mt-5 sm:mt-8">
+                <span className="relative inline-flex">
+                  <span aria-hidden="true" className="cta-ring absolute inset-0 rounded-full" />
+                  <Link
+                    href={routes.cities()}
+                    className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-brand-600 py-2 pl-6 pr-2 text-base font-bold text-white shadow-[0_14px_26px_-12px_rgba(47,94,73,0.75)] transition-colors duration-300 hover:bg-brand-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-600 sm:pl-7 sm:text-lg"
+                  >
+                    <span className="relative z-10">Find your university</span>
+                    <span
+                      aria-hidden="true"
+                      className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-marker-300 text-ink-900 transition-transform duration-300 ease-out group-hover:translate-x-1 group-hover:-rotate-45 sm:h-11 sm:w-11"
+                    >
+                      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                        <path d="M3 8h10M9 4l4 4-4 4" />
+                      </svg>
+                    </span>
+                    <span aria-hidden="true" className="cta-sheen" />
+                  </Link>
+                </span>
+              </MagneticButton>
+
+              <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-sm font-medium text-ink-700 sm:mt-5">
+                {["Free", "No sign-up", "Nothing saved"].map((item) => (
+                  <li key={item} className="inline-flex items-center gap-1.5">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-4 w-4 text-brand-600">
+                      <path d="m3.5 8.5 3 3 6-7" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </Reveal>
             <Reveal delay={120}>
               <HeroGradebook />
@@ -195,71 +242,38 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ---------- Why this site ---------- */}
-      <section aria-label="Why this site" className="py-3 sm:py-6">
-        <Container>
-          <Reveal>
-            <BentoFeatures cityCount={cities.length} universityCount={universities.length} />
-          </Reveal>
+      {/* ---------- Same grade, different points: a dark band, the one on the page ---------- */}
+      <section aria-label="The same grade is not worth the same points everywhere" className="relative overflow-hidden bg-brand-900 py-12 text-white sm:py-20">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)",
+            backgroundSize: "36px 36px",
+            maskImage: "radial-gradient(ellipse at 85% 10%, black, transparent 70%)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-marker-300/20 blur-3xl"
+        />
+        <Container className="relative">
+          <GradeExplorer spreads={gradeSpreads} />
         </Container>
       </section>
-
-      {/* ---------- How it works (a real sequence) ---------- */}
-      <section aria-labelledby="how-heading" className="pb-9 pt-6 sm:pb-12 sm:pt-6">
-        <Container>
-          <Reveal>
-            <h2 id="how-heading" className="max-w-xl text-2xl font-bold text-ink-900 sm:text-4xl">
-              From your transcript to your GPA in three steps
-            </h2>
-          </Reveal>
-          <ol className="relative mt-4 grid gap-2.5 sm:mt-10 sm:gap-5 md:grid-cols-3">
-            {[
-              ["Choose your city", "Start with the city your campus is in. Every city page lists the universities covered."],
-              ["Open your university", "Each university has its own grade table, so the same letter grade is scored the way your department scores it."],
-              ["Enter your grades", "Add credit hours and grades. Your GPA, CGPA and the grades you need next come straight out."],
-            ].map(([title, body], i) => (
-              <li
-                key={title}
-                className="relative flex items-start gap-3.5 rounded-2xl border border-ink-900/10 bg-white p-3.5 md:block md:rounded-3xl md:p-7"
-              >
-                <span
-                  aria-hidden="true"
-                  className="font-[family-name:var(--font-display)] text-3xl font-extrabold leading-none text-brand-300 md:text-6xl md:text-brand-200"
-                >
-                  {i + 1}
-                </span>
-                <div>
-                  <h3 className="text-base font-bold text-ink-900 md:mt-4 md:text-xl">{title}</h3>
-                  <p className="mt-0.5 text-[13px] leading-snug text-ink-700 md:mt-2 md:text-base md:leading-relaxed">{body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </Container>
-      </section>
-
       {/* ---------- Cities ---------- */}
       <section id="cities" aria-labelledby="cities-heading" className="scroll-mt-4 bg-white">
-        <Container className="py-9 sm:py-12">
-          <Reveal>
-            <h2 id="cities-heading" className="text-2xl font-bold text-ink-900 sm:text-4xl">
-              {homeContent.citiesHeading}
-            </h2>
-            <p className="mt-1.5 max-w-xl text-sm text-ink-700 sm:mt-2 sm:text-base">{homeContent.citiesSubheading}</p>
-          </Reveal>
-
+        <Container className="py-12 sm:py-20">
           {cities.length === 0 ? (
-            <p className="mt-6 rounded-xl border border-ink-900/10 bg-white p-5 text-sm text-ink-700">
+            <p className="rounded-xl border border-ink-900/10 bg-white p-5 text-sm text-ink-700">
               {homeContent.citiesEmptyMessage}
             </p>
           ) : (
-            <div className="mt-5 sm:mt-8">
-              <FeaturedCitiesGrid cities={cityPool} totalCityCount={cities.length} />
-            </div>
+            <CityExplorer cities={posters} groups={posterGroups} universityTotal={universities.length} />
           )}
         </Container>
       </section>
-
       {/* ---------- Featured universities: real campus photography ---------- */}
       {showcaseUniversities.length > 0 && (
         <section
