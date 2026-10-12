@@ -28,7 +28,6 @@ export const metadata: Metadata = buildPageMetadata({
   description: DESCRIPTION,
   path: routes.gpaVsCgpa(),
   type: "article",
-  defaultImage: false,
 });
 
 const TOC = [
