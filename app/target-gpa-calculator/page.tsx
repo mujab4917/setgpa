@@ -36,6 +36,7 @@ export const metadata: Metadata = buildPageMetadata({
   title: targetPlannerPageContent.metaTitle,
   description: targetPlannerPageContent.metaDescription,
   path: routes.targetPlanner(),
+  defaultImage: false,
 });
 
 /**

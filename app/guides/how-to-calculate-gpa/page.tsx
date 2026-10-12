@@ -35,6 +35,7 @@ export const metadata: Metadata = buildPageMetadata({
   description: DESCRIPTION,
   path: routes.howToCalculateGpa(),
   type: "article",
+  defaultImage: false,
 });
 
 const TOC = [

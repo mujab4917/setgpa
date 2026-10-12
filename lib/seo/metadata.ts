@@ -108,16 +108,17 @@ interface PageMetadataInput {
   brand?: boolean;
   type?: "website" | "article";
   /**
-   * Set false to leave the share image to the page itself. University pages do
-   * this because each one has its own generated image
-   * (app/universities/[citySlug]/[universitySlug]/opengraph-image.tsx).
+   * Pages that have their own opengraph-image.tsx next to them (a university, a
+   * city, Target GPA, each guide) pass false and let Next.js add that image.
+   * Every other page gets the site-wide card, app/opengraph-image.tsx. (Next.js
+   * does not pass the site-wide one down to pages that set their own metadata.)
    */
   defaultImage?: boolean;
 }
 
-/** The default share image: 1200 x 630, made by scripts/generate-brand-assets.mjs. */
+/** The site-wide share image: 1200 x 630, drawn by app/opengraph-image.tsx. */
 export const SHARE_IMAGE = {
-  url: "/og-image.png",
+  url: "/opengraph-image",
   width: 1200,
   height: 630,
   type: "image/png",
@@ -197,6 +198,7 @@ export function buildCityMetadata(city: CityDetail, universityNames: string[] = 
     title: focus?.metaTitle ?? `GPA Calculator for ${city.name} Universities`,
     description,
     path: routes.city(city.slug),
+    defaultImage: false,
   });
 }
 
