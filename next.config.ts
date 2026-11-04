@@ -7,13 +7,22 @@ const nextConfig: NextConfig = {
   // bookmarks and any search results for the old addresses working.
   async redirects() {
     return [
+      // Vercel's own address for the live project serves the same pages as
+      // setgpa.com. Send it to the real domain so search engines only ever see one.
+      // Only this exact host: test links for other branches live on other hosts.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "setgpa.vercel.app" }],
+        destination: "https://setgpa.com/:path*",
+        permanent: true,
+      },
       { source: "/how-to-calculate-gpa", destination: "/guides/how-to-calculate-gpa", permanent: true },
       { source: "/gpa-vs-cgpa", destination: "/guides/gpa-vs-cgpa", permanent: true },
     ];
   },
   // Security headers on EVERY response, including server-rendered pages and
-  // /_next/image. netlify.toml sets the same headers, but Netlify only applies
-  // those to static files, so the pages themselves were going out without them.
+  // /_next/image. (netlify.toml has the same headers from the Netlify days, but a
+  // host only applies those to static files, so they are set here for every page.)
   async headers() {
     return [
       {

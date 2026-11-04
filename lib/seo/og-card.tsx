@@ -1,8 +1,6 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-
 import type { ReactNode } from "react";
 
+import { BRICOLAGE_EXTRABOLD_BASE64 } from "@/lib/seo/og-font";
 import { OG_LOGO_DATA_URL } from "@/lib/seo/og-logo";
 import { siteConfig } from "@/lib/site-config";
 
@@ -31,16 +29,21 @@ export const OG = {
 
 /**
  * The site's own display font (Bricolage Grotesque ExtraBold, SIL Open Font
- * Licence), kept in assets/fonts. The built-in image font has no bold weight,
- * which made names too thin to read as a thumbnail.
+ * Licence). The built-in image font has no bold weight, which made names too
+ * thin to read as a thumbnail.
+ *
+ * It is embedded in the code (lib/seo/og-font.ts), never read from disk: a file
+ * read at start-up crashed the whole site on Netlify when the file was missing
+ * from the deployed function. Decoding happens on first use, not at import.
  */
-const fontData = readFile(path.join(process.cwd(), "assets", "fonts", "BricolageGrotesque-ExtraBold.ttf"));
+let fontBytes: Buffer | undefined;
 
 /** Options for `new ImageResponse(element, await ogOptions())`. */
 export async function ogOptions() {
+  fontBytes ??= Buffer.from(BRICOLAGE_EXTRABOLD_BASE64, "base64");
   return {
     ...OG_SIZE,
-    fonts: [{ name: "Bricolage", data: await fontData, weight: 800 as const, style: "normal" as const }],
+    fonts: [{ name: "Bricolage", data: fontBytes, weight: 800 as const, style: "normal" as const }],
   };
 }
 

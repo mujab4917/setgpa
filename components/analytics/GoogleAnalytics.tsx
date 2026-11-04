@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site-config";
  *
  * It is switched on ONLY for the real site. It stays off for:
  *   - local development and local test builds (the address contains "localhost")
- *   - Netlify deploy previews and branch deploys (siteConfig.indexable is false)
+ *   - Preview and branch deployments (Vercel, Netlify) (siteConfig.indexable is false)
  * so test visits never appear in your reports.
  *
  * `afterInteractive` loads the script after the page is usable, so Analytics

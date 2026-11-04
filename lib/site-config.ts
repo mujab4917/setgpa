@@ -41,12 +41,17 @@ export const siteConfig = {
   contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "",
 
   /**
-   * Whether search engines may index this build. Netlify sets CONTEXT to
-   * "production" for the live site and to "deploy-preview" / "branch-deploy"
-   * for test copies. Outside Netlify (local development) CONTEXT is unset and
-   * the site counts as indexable, which has no effect because it is not public.
+   * Whether search engines may index this build. Only the live site may be.
+   *
+   * Vercel (where the site is hosted) sets VERCEL_ENV to "production" for the
+   * live deployment and "preview" for the private test link of every branch.
+   * Netlify's CONTEXT is still honoured in case the site is ever built there.
+   * Outside both (local development) the site counts as indexable, which has
+   * no effect because it is not public.
    */
-  indexable: (process.env.CONTEXT ?? "production") === "production",
+  indexable: process.env.VERCEL_ENV
+    ? process.env.VERCEL_ENV === "production"
+    : (process.env.CONTEXT ?? "production") === "production",
 
   /**
    * Google Analytics 4 Measurement ID. It is public by design (every visitor can
