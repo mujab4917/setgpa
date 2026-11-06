@@ -33,7 +33,7 @@ function Chevron({ className = "" }: { className?: string }) {
  * up it shows the full trail with chevrons, as plain text with no pill around
  * it. Both versions are real links, and the full list stays in the HTML.
  */
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
+export function Breadcrumbs({ items, onDark = false }: { items: Crumb[]; onDark?: boolean }) {
   if (items.length < 2) return null;
   const parent = items[items.length - 2];
 
@@ -42,7 +42,9 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
       {/* Phone: one back link. */}
       <Link
         href={parent.href}
-        className="-ml-1 inline-flex min-h-10 items-center gap-1 rounded-full px-1 font-semibold text-brand-700 transition-colors hover:text-brand-900 sm:hidden"
+        className={`-ml-1 inline-flex min-h-10 items-center gap-1 rounded-full px-1 font-semibold transition-colors sm:hidden ${
+          onDark ? "text-marker-300 hover:text-white" : "text-brand-700 hover:text-brand-900"
+        }`}
       >
         <Chevron className="h-4 w-4 rotate-180" />
         <span className="max-w-[16rem] truncate">{parent.shortLabel ?? parent.label}</span>
@@ -54,15 +56,17 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
           const isCurrent = index === items.length - 1;
           return (
             <li key={item.href} className="flex min-w-0 items-center gap-1.5">
-              {index > 0 && <Chevron className="h-3.5 w-3.5 shrink-0 text-ink-700/50" />}
+              {index > 0 && <Chevron className={`h-3.5 w-3.5 shrink-0 ${onDark ? "text-white/40" : "text-ink-700/50"}`} />}
               {isCurrent ? (
-                <span aria-current="page" className="truncate font-semibold text-ink-900">
+                <span aria-current="page" className={`truncate font-semibold ${onDark ? "text-white" : "text-ink-900"}`}>
                   {item.label}
                 </span>
               ) : (
                 <Link
                   href={item.href}
-                  className="text-ink-700 underline-offset-4 transition-colors hover:text-brand-700 hover:underline"
+                  className={`underline-offset-4 transition-colors hover:underline ${
+                    onDark ? "text-white/70 hover:text-white" : "text-ink-700 hover:text-brand-700"
+                  }`}
                 >
                   {item.label}
                 </Link>

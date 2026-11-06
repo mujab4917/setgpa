@@ -1,5 +1,5 @@
 /**
- * Content for the two guide pages and the homepage "GPA basics" section.
+ * Content for the two hand-built guide pages and the homepage "GPA basics" section.
  *
  * Every number in a worked example is computed here from the raw inputs, so a
  * typo in one place can never put the example out of step with its own answer.
@@ -10,36 +10,17 @@ import { universityPageContent } from "@/data/site-content";
 
 /** ISO dates used in Article structured data and the on-page "updated" line. */
 export const GUIDE_PUBLISHED = "2026-10-02";
-export const GUIDE_UPDATED = "2026-10-02";
+export const GUIDE_UPDATED = "2026-11-06";
 
 /** Footer "Guides" column. */
 export const guideLinks = [
   { label: "All guides", href: routes.guides() },
   { label: "How to calculate GPA", href: routes.howToCalculateGpa() },
   { label: "GPA vs CGPA", href: routes.gpaVsCgpa() },
+  { label: "CGPA to percentage", href: routes.cgpaToPercentage() },
+  { label: "SGPA to CGPA", href: routes.sgpaToCgpa() },
+  { label: "CGPA full form", href: routes.cgpaFullForm() },
   { label: "Target GPA calculator", href: routes.targetPlanner() },
-] as const;
-
-/**
- * The guides listed on /guides. To add a guide: create its page under
- * app/guides/<slug>/page.tsx, add a route in lib/routes.ts, then add it here
- * and it appears on the hub page, in the footer and in the sitemap.
- */
-export const guides = [
-  {
-    title: "How to calculate GPA and CGPA",
-    href: routes.howToCalculateGpa(),
-    description:
-      "The GPA formula, a step-by-step method and a worked example, then the same for your cumulative CGPA.",
-    points: ["The GPA and CGPA formulas", "A worked example with real numbers", "Mistakes that give the wrong result"],
-  },
-  {
-    title: "GPA vs CGPA: what is the difference?",
-    href: routes.gpaVsCgpa(),
-    description:
-      "GPA is one semester and CGPA is your whole degree so far. See how they differ and when each one matters.",
-    points: ["A side-by-side comparison", "How one semester moves your CGPA", "Which one universities look at"],
-  },
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -153,6 +134,11 @@ export const howToFaq: GuideFaq[] = [
     answer:
       "It depends on your university's scale and rules. Thresholds for probation, honours and scholarships are set by each university, so check your handbook. The target GPA calculator shows what you need next semester to reach a specific CGPA.",
   },
+  {
+    question: "Does the formula change on a 10-point scale?",
+    answer:
+      "No. The method is identical: multiply grade points by credit hours, add them up and divide by total credit hours. Only the grade points differ, because the top grade is 10 instead of 4.",
+  },
 ];
 
 export const gpaVsCgpaFaq: GuideFaq[] = [
@@ -179,6 +165,11 @@ export const gpaVsCgpaFaq: GuideFaq[] = [
   {
     question: "Can I convert CGPA to percentage?",
     answer:
-      "There is no single national formula. Each university publishes its own way to convert grades or CGPA to marks, so use the conversion in your university's regulations or ask your department.",
+      "There is no single national formula. Each university publishes its own way to convert grades or CGPA to marks, so use the conversion in your university's regulations or ask your department. For a CGPA out of 10, the CBSE rule multiplies by 9.5.",
+  },
+  {
+    question: "Is CGPA out of 10 or out of 4?",
+    answer:
+      "It depends on the university. Many Indian institutions use a 10-point scale, while Pakistan, the United States and Canada mostly use a 4.0 scale. Never compare a CGPA from one scale with a CGPA from another.",
   },
 ];

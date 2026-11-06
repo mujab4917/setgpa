@@ -78,6 +78,13 @@
   --shadow-glow-brand: 0 0 0 1px rgba(58, 116, 89, 0.15), 0 12px 40px -8px rgba(58, 116, 89, 0.35);
 }
 
+/* Editorial serif for the guides (loaded in app/guides/layout.tsx). "inline"
+   makes the utility read the variable where it is used, because the font
+   variable is set on the guides wrapper, not on the page root. */
+@theme inline {
+  --font-serif: var(--font-serif-face), ui-serif, Georgia, "Times New Roman", serif;
+}
+
 @layer base {
   /* Phones: scale every rem-based size (text, padding, gaps) down about 6%,
      so the whole interface is a little tighter without touching each class. */

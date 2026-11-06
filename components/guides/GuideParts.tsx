@@ -23,11 +23,15 @@ export function GuideSection({
   children: ReactNode;
 }) {
   return (
-    <section id={id} aria-labelledby={`${id}-heading`} className="mt-14 scroll-mt-24">
-      <h2 id={`${id}-heading`} className="text-2xl font-extrabold text-ink-900 sm:text-3xl">
+    <section id={id} aria-labelledby={`${id}-heading`} className="mt-16 scroll-mt-24">
+      <span aria-hidden="true" className="block h-1 w-12 rounded-full bg-terracotta-500" />
+      <h2
+        id={`${id}-heading`}
+        className="mt-4 font-serif text-[1.65rem] font-semibold leading-tight tracking-tight text-ink-900 sm:text-[2.1rem]"
+      >
         {title}
       </h2>
-      <div className="mt-4 space-y-4 text-lg leading-relaxed text-ink-700">{children}</div>
+      <div className="mt-5 space-y-5 text-[1.075rem] leading-8 text-ink-700 sm:text-[1.125rem]">{children}</div>
     </section>
   );
 }
@@ -35,7 +39,7 @@ export function GuideSection({
 export function GuideToc({ items }: { items: Array<{ id: string; label: string }> }) {
   return (
     <nav aria-label="On this page" className="rounded-2xl border border-ink-900/10 bg-white p-5">
-      <p className="text-sm font-bold text-ink-900">On this page</p>
+      <p className="font-serif text-lg font-semibold text-ink-900">In this guide</p>
       <ul className="mt-3 flex flex-wrap gap-2">
         {items.map((item) => (
           <li key={item.id}>
@@ -86,16 +90,18 @@ export function GuideCta() {
   return (
     <section
       aria-labelledby="guide-cta-heading"
-      className="mt-16 rounded-[1.75rem] bg-brand-800 p-8 text-white sm:p-10"
+      className="relative mt-20 overflow-hidden rounded-[2rem] bg-ink-900 p-8 text-white sm:p-12"
     >
-      <h2 id="guide-cta-heading" className="text-2xl font-extrabold sm:text-3xl">
+      <span aria-hidden="true" className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-brand-700/60" />
+      <span aria-hidden="true" className="absolute -bottom-24 right-24 h-48 w-48 rounded-full bg-terracotta-600/40" />
+      <h2 id="guide-cta-heading" className="relative font-serif text-3xl font-semibold sm:text-4xl">
         Calculate it for your own university
       </h2>
-      <p className="mt-3 max-w-xl text-white/80">
+      <p className="relative mt-3 max-w-xl text-white/80">
         Every university uses its own grade table. Pick yours and the GPA calculator and CGPA calculator
         use the right grade points.
       </p>
-      <div className="mt-6 flex flex-wrap gap-3">
+      <div className="relative mt-6 flex flex-wrap gap-3">
         <Link
           href={routes.cities()}
           className="inline-flex rounded-full bg-marker-300 px-6 py-3 text-sm font-bold text-ink-900 transition-colors hover:bg-marker-400"
@@ -110,5 +116,24 @@ export function GuideCta() {
         </Link>
       </div>
     </section>
+  );
+}
+
+/** An in-text link in the site's link style. */
+export function GuideLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link href={href} className="font-semibold text-brand-700 underline underline-offset-4">
+      {children}
+    </Link>
+  );
+}
+
+/** A highlighted aside for the one caveat a reader must not miss. */
+export function GuideNote({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <aside className="rounded-2xl border border-marker-400/70 bg-marker-200 px-5 py-4 text-base leading-relaxed text-ink-900">
+      <p className="font-extrabold">{title}</p>
+      <div className="mt-1 space-y-2">{children}</div>
+    </aside>
   );
 }

@@ -61,8 +61,11 @@ export const siteConfig = {
    */
   gaMeasurementId: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-4YQY277MGM",
 
-  /** Language used in the <html lang> attribute. */
-  locale: "en_PK",
+  /**
+   * Open Graph locale. The site now serves students worldwide, so it uses the
+   * neutral English default instead of Pakistan-only "en_PK".
+   */
+  locale: "en_US",
 } as const;
 
 /**

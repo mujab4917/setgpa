@@ -10,12 +10,15 @@ import type { FaqItem } from "@/lib/seo/faq";
  *
  * Server Component - no client JavaScript.
  */
-export function UniversityFaq({ items }: { items: FaqItem[] }) {
+export function UniversityFaq({ items, serif = false }: { items: FaqItem[]; serif?: boolean }) {
   if (items.length === 0) return null;
 
   return (
-    <section aria-labelledby="faq-heading" className="mt-8 sm:mt-12">
-      <h2 id="faq-heading" className="text-xl font-bold text-ink-900 sm:text-2xl">
+    <section aria-labelledby="faq-heading" className={serif ? "mt-16 scroll-mt-24" : "mt-8 scroll-mt-24 sm:mt-12"}>
+      <h2
+        id="faq-heading"
+        className={serif ? "font-serif text-[1.65rem] font-semibold text-ink-900 sm:text-[2.1rem]" : "text-xl font-bold text-ink-900 sm:text-2xl"}
+      >
         {faqContent.heading}
       </h2>
 

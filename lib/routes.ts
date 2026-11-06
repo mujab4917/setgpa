@@ -12,6 +12,11 @@ export const routes = {
   guides: () => "/guides",
   howToCalculateGpa: () => "/guides/how-to-calculate-gpa",
   gpaVsCgpa: () => "/guides/gpa-vs-cgpa",
+  cgpaToPercentage: () => "/guides/cgpa-to-percentage",
+  cgpaFullForm: () => "/guides/cgpa-full-form",
+  sgpaToCgpa: () => "/guides/sgpa-to-cgpa",
+  /** Any guide kept in data/articles. */
+  guide: (slug: string) => `/guides/${slug}`,
   city: (citySlug: string) => `/universities/${citySlug}`,
   university: (citySlug: string, universitySlug: string) =>
     `/universities/${citySlug}/${universitySlug}`,

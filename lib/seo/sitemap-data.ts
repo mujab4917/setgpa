@@ -5,6 +5,7 @@
  * stays a few lines long.
  */
 
+import { articles } from "@/data/articles";
 import { GUIDE_UPDATED } from "@/data/guides";
 import { getCitySitemapEntries } from "@/lib/queries/cities";
 import { getAllUniversityPaths } from "@/lib/queries/universities";
@@ -29,7 +30,12 @@ export function getStaticPageEntries(): SitemapEntry[] {
     routes.targetPlanner(),
     routes.about(),
     routes.contact(),
-  ].map((path) => ({ url: absoluteUrl(path), lastModified: CONTENT_UPDATED }));
+  ]
+    .map((path) => ({ url: absoluteUrl(path), lastModified: CONTENT_UPDATED }))
+    .concat(
+      // One entry per article, with the date that article was last edited.
+      articles.map((a) => ({ url: absoluteUrl(routes.guide(a.slug)), lastModified: new Date(a.updated) })),
+    );
 }
 
 export async function getCityEntries(): Promise<SitemapEntry[]> {

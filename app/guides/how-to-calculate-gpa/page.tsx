@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { GuideCta, GuideFormula, GuideSection, GuideTable, GuideToc } from "@/components/guides/GuideParts";
+import { ArticleLayout } from "@/components/guides/ArticleLayout";
+import { GuideFormula, GuideLink, GuideNote, GuideSection, GuideTable } from "@/components/guides/GuideParts";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { PageHero } from "@/components/layout/PageHero";
-import { Container } from "@/components/ui/Container";
-import { UniversityFaq } from "@/components/universities/UniversityFaq";
 import {
   computeCgpaExample,
   computeGpaExample,
@@ -38,11 +36,14 @@ export const metadata: Metadata = buildPageMetadata({
   defaultImage: false,
 });
 
+const PATH = routes.howToCalculateGpa();
+
 const TOC = [
   { id: "gpa-formula", label: "GPA formula" },
   { id: "gpa-steps", label: "Step by step" },
   { id: "gpa-example", label: "Worked example" },
   { id: "cgpa", label: "How to calculate CGPA" },
+  { id: "scales", label: "GPA scales worldwide" },
   { id: "mistakes", label: "Common mistakes" },
 ];
 
@@ -65,20 +66,28 @@ export default function HowToCalculateGpaPage() {
               { name: "How to calculate GPA", path: routes.howToCalculateGpa() },
             ])} />
 
-      <PageHero
+      <ArticleLayout
         title="How to calculate GPA and CGPA"
-        description="Your GPA is the average of your grade points for one semester, weighted by credit hours. Your CGPA is the same calculation across every semester you have finished."
+        intro="Your GPA is the average of your grade points for one semester, weighted by credit hours. Your CGPA is the same calculation across every semester you have finished."
+        category="Basics"
+        readingMinutes={6}
+        updated={GUIDE_UPDATED}
+        cover={{ art: "gpa", tone: "cream" }}
         breadcrumbs={[
           { label: "Home", href: routes.home() },
           { label: "Guides", href: routes.guides() },
-          { label: "How to calculate GPA", href: routes.howToCalculateGpa() },
+          { label: "How to calculate GPA", href: PATH },
         ]}
-      />
-
-      <Container className="pb-8 pt-4">
-        <div className="max-w-3xl">
-        <GuideToc items={TOC} />
-
+        keyPoints={[
+          "GPA = total quality points ÷ total credit hours, where quality points are credit hours × grade points.",
+          "CGPA uses the same idea across semesters, weighting each semester by its credit hours.",
+          "The method is identical on a 4.0 or a 10-point scale. Only the grade points change.",
+          "Use your own university's grade table, because points for grades like A- differ between universities.",
+        ]}
+        toc={TOC}
+        faq={howToFaq}
+        related={[routes.cgpaFullForm(), routes.sgpaToCgpa(), routes.cgpaToPercentage()]}
+      >
         <GuideSection id="gpa-formula" title="The GPA formula">
           <p>
             GPA stands for grade point average. Each course adds <strong>quality points</strong>: its credit hours
@@ -189,6 +198,22 @@ export default function HowToCalculateGpaPage() {
           </p>
         </GuideSection>
 
+        <GuideSection id="scales" title="GPA scales: 4.0, 10-point and others">
+          <p>
+            The method above is the same everywhere, but the scale is not. Pakistan, the United States and Canada
+            mostly use a 4.0 scale, where an A is about 4.0. Many Indian institutions use a 10-point scale, where the
+            top grade is 10. Some countries use 5.0 or other scales. Always calculate with the grade points your own
+            university assigns, and say which scale your result is on.
+          </p>
+          <GuideNote title="Do not compare results from different scales">
+            <p>
+              A 3.5 is excellent on a 4.0 scale and weak on a 10-point scale. If you need a percentage from a
+              10-point CGPA, see <GuideLink href={routes.cgpaToPercentage()}>CGPA to percentage</GuideLink>. To go from
+              semester results to a CGPA, use the <GuideLink href={routes.sgpaToCgpa()}>SGPA to CGPA calculator</GuideLink>.
+            </p>
+          </GuideNote>
+        </GuideSection>
+
         <GuideSection id="mistakes" title="Common GPA calculation mistakes">
           <ul className="list-disc space-y-3 pl-6 marker:text-brand-700">
             <li>
@@ -211,16 +236,7 @@ export default function HowToCalculateGpaPage() {
             </li>
           </ul>
         </GuideSection>
-
-        <UniversityFaq items={howToFaq} />
-        <GuideCta />
-
-        <p className="mt-10 text-sm text-ink-700">
-          Last updated 2 October 2026. This guide explains the standard method; your university&rsquo;s official
-          regulations always take priority.
-        </p>
-        </div>
-      </Container>
+      </ArticleLayout>
     </>
   );
 }

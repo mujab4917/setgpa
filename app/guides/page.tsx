@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { PageHero } from "@/components/layout/PageHero";
+import { GuideBrowser } from "@/components/guides/GuideBrowser";
+import { GuideCover } from "@/components/guides/GuideCover";
+import { GuideHeroBand } from "@/components/guides/GuideHeroBand";
+import { GuideCta } from "@/components/guides/GuideParts";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Container } from "@/components/ui/Container";
-import { guides } from "@/data/guides";
+import { articles } from "@/data/articles";
+import { getSummary, guideSummaries } from "@/data/guide-index";
+import { gpaVsCgpaFaq, howToFaq } from "@/data/guides";
 import { routes } from "@/lib/routes";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { breadcrumbJsonLd, webPageJsonLd } from "@/lib/seo/schema";
@@ -12,14 +18,15 @@ import { breadcrumbJsonLd, webPageJsonLd } from "@/lib/seo/schema";
 /**
  * GUIDES HUB -> /guides
  *
- * The home of every guide. Each guide lives at /guides/<name>, is listed here
- * and in the footer, and is included in the sitemap. The list itself is in
- * data/guides.ts (`guides`), so adding a guide there adds it to this page.
+ * A magazine front page: a headline and the newest guide, every guide as an
+ * illustrated card, shortcuts by goal, a "start here" feature and a list of
+ * quick answers. Guides written as data (data/articles) appear automatically;
+ * the two hand-built ones are listed in data/guide-index.ts.
  */
 
-const TITLE = "GPA and CGPA Guides for Pakistani Students";
+const TITLE = "GPA and CGPA Guides: Formulas, Conversions, Examples";
 const DESCRIPTION =
-  "Plain-language guides to calculating GPA and CGPA, the difference between them and planning your grades, with worked examples.";
+  "Plain-language GPA and CGPA guides with worked examples: formulas, CGPA to percentage, SGPA to CGPA and what each term means.";
 
 export const metadata: Metadata = buildPageMetadata({
   title: TITLE,
@@ -27,7 +34,30 @@ export const metadata: Metadata = buildPageMetadata({
   path: routes.guides(),
 });
 
+/** Shortcuts by what the reader has in front of them. */
+const goals = [
+  { href: routes.cgpaToPercentage(), heading: "I have a CGPA and need a percentage", hint: "CGPA to percentage converter" },
+  { href: routes.sgpaToCgpa(), heading: "I have my semester results", hint: "SGPA to CGPA calculator" },
+  { href: routes.cgpaFullForm(), heading: "I want the terms explained", hint: "CGPA, SGPA and GPA in plain words" },
+];
+
+/** First question of every guide, then the second of the newest ones: 8 quick answers. */
+function quickAnswers() {
+  const faqs = [
+    ...articles.map((a) => ({ href: routes.guide(a.slug), category: a.category, faq: a.faq })),
+    { href: routes.howToCalculateGpa(), category: "Basics", faq: howToFaq },
+    { href: routes.gpaVsCgpa(), category: "Basics", faq: gpaVsCgpaFaq },
+  ];
+  const firsts = faqs.map((f) => ({ href: f.href, category: f.category, question: f.faq[0].question }));
+  const seconds = faqs.slice(0, 3).map((f) => ({ href: f.href, category: f.category, question: f.faq[1].question }));
+  return [...firsts, ...seconds];
+}
+
 export default function GuidesPage() {
+  const [lead] = guideSummaries;
+  const start = getSummary(routes.howToCalculateGpa());
+  const answers = quickAnswers();
+
   return (
     <>
       <JsonLd
@@ -45,88 +75,178 @@ export default function GuidesPage() {
         ])}
       />
 
-      <PageHero
-        compact
-        title="GPA and CGPA guides"
-        description="Short, clear explanations with real numbers, so you can check your own result and understand every step."
-        breadcrumbs={[
-          { label: "Home", href: routes.home() },
-          { label: "Guides", href: routes.guides() },
-        ]}
-      />
-
-      <Container className="py-7 sm:py-12">
-        <ul className="grid gap-3 sm:gap-5 md:grid-cols-2">
-          {guides.map((guide) => (
-            <li key={guide.href}>
-              <article className="flex h-full flex-col rounded-2xl border border-ink-900/10 bg-white p-4 transition-colors hover:border-brand-400 sm:rounded-3xl sm:p-7">
-                <h2 className="text-xl font-extrabold text-ink-900 sm:text-2xl">
-                  <Link href={guide.href} className="hover:text-brand-700">
-                    {guide.title}
-                  </Link>
-                </h2>
-                <p className="mt-2 text-sm leading-relaxed text-ink-700 sm:text-base">{guide.description}</p>
-
-                <ul className="mt-4 space-y-2">
-                  {guide.points.map((point) => (
-                    <li key={point} className="flex gap-2.5 text-sm text-ink-900 sm:text-base">
-                      <span
-                        aria-hidden="true"
-                        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-600 text-[11px] font-bold text-white"
-                      >
-                        &#10003;
-                      </span>
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href={guide.href}
-                  className="mt-5 inline-flex w-fit rounded-full bg-ink-900 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-700 sm:mt-6"
-                >
-                  Read the guide
-                </Link>
-              </article>
-            </li>
-          ))}
-        </ul>
-
-        {/* ---------- After reading: use the tools ---------- */}
-        <section aria-labelledby="tools-heading" className="mt-8 sm:mt-14">
-          <h2 id="tools-heading" className="text-xl font-extrabold text-ink-900 sm:text-3xl">
-            Ready to calculate?
-          </h2>
-          <p className="mt-1.5 max-w-2xl text-sm text-ink-700 sm:mt-2 sm:text-base">
-            Every university uses its own grade table, so the calculators are built per university.
-          </p>
-          <div className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-5">
-            <Link
-              href={routes.cities()}
-              className="group rounded-2xl bg-brand-800 p-5 text-white transition-transform duration-200 hover:-translate-y-0.5 sm:rounded-3xl sm:p-7"
-            >
-              <h3 className="text-lg font-extrabold sm:text-xl">Find your university</h3>
-              <p className="mt-1.5 text-sm text-white/80">
-                Open the GPA and CGPA calculator that uses your own grade table.
-              </p>
-              <span className="mt-3 inline-block text-sm font-bold text-marker-300 underline underline-offset-4">
-                Browse cities
-              </span>
-            </Link>
-            <Link
-              href={routes.targetPlanner()}
-              className="group rounded-2xl border border-marker-400/60 bg-marker-200 p-5 text-ink-900 transition-transform duration-200 hover:-translate-y-0.5 sm:rounded-3xl sm:p-7"
-            >
-              <h3 className="text-lg font-extrabold sm:text-xl">Plan your target CGPA</h3>
-              <p className="mt-1.5 text-sm text-ink-900/80">
-                See the GPA you need next semester to reach the CGPA you want.
-              </p>
-              <span className="mt-3 inline-block text-sm font-bold underline underline-offset-4">
-                Open the target planner
-              </span>
-            </Link>
+      {/* ---------- Hero: headline + the newest guide ---------- */}
+      <GuideHeroBand tone="brand" glyph="4.0">
+        <Container className="relative z-10 grid gap-12 pb-16 pt-6 sm:pb-24 sm:pt-10 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-14 lg:pb-28 lg:pt-14">
+          <div>
+            <Breadcrumbs
+              onDark
+              items={[
+                { label: "Home", href: routes.home() },
+                { label: "Guides", href: routes.guides() },
+              ]}
+            />
+            <h1 className="mt-6 font-serif text-[2.6rem] font-semibold leading-[1] tracking-[-0.035em] text-[#fbf6ea] sm:text-7xl">
+              Grades, explained so you can check them yourself.
+            </h1>
+            <p className="mt-6 max-w-xl text-[1.075rem] leading-relaxed text-[#fbf6ea]/85 sm:text-lg">
+              Short guides with real numbers and free converters for GPA, CGPA and SGPA, whichever country or
+              grading scale you study under.
+            </p>
+            <dl className="mt-9 flex gap-9 border-t border-white/20 pt-6">
+              {[
+                [String(guideSummaries.length), "guides"],
+                ["2", "free converters"],
+                ["4.0 & 10", "point scales"],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <dt className="sr-only">{label}</dt>
+                  <dd className="font-serif text-4xl font-semibold text-marker-300">{value}</dd>
+                  <dd className="text-sm text-white/75">{label}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
+
+          <Link href={lead.href} className="group relative block pb-6">
+            <span aria-hidden="true" className="absolute -right-5 -top-6 h-32 w-32 rounded-full bg-marker-300 sm:h-44 sm:w-44" />
+            <span aria-hidden="true" className="absolute -left-5 bottom-12 h-24 w-24 rotate-12 rounded-3xl bg-terracotta-500 sm:h-28 sm:w-28" />
+            <GuideCover
+              cover={lead.cover}
+              className="relative aspect-[3/2] rounded-[2rem] shadow-elevation-3 ring-1 ring-white/15 transition-transform duration-300 group-hover:-translate-y-1"
+            />
+            <div className="absolute bottom-0 left-4 right-4 rounded-2xl bg-white p-5 text-ink-900 shadow-elevation-2 sm:left-8 sm:right-auto sm:max-w-sm">
+              <p className="text-xs font-bold text-terracotta-600">New: {lead.category}</p>
+              <p className="mt-1 font-serif text-lg font-semibold leading-snug group-hover:text-brand-700">
+                {lead.title}
+              </p>
+              <p className="mt-1 text-sm text-ink-700">{lead.readingMinutes} min read</p>
+            </div>
+          </Link>
+        </Container>
+      </GuideHeroBand>
+
+      {/* ---------- Latest guides ---------- */}
+      <section aria-labelledby="latest-heading" className="py-12 sm:py-16">
+        <Container>
+          <h2 id="latest-heading" className="font-serif text-3xl font-semibold text-ink-900 sm:text-4xl">
+            Latest guides
+          </h2>
+          <p className="mt-2 max-w-xl text-ink-700">Every guide, newest first. Filter by topic.</p>
+          <div className="mt-7">
+            <GuideBrowser guides={guideSummaries} />
+          </div>
+        </Container>
+      </section>
+
+      {/* ---------- Pick your goal ---------- */}
+      <section aria-labelledby="goal-heading" className="bg-brand-50 py-12 sm:py-16">
+        <Container>
+          <h2 id="goal-heading" className="font-serif text-3xl font-semibold text-ink-900 sm:text-4xl">
+            Start with what you have
+          </h2>
+          <p className="mt-2 max-w-xl text-ink-700">Pick the situation closest to yours.</p>
+          <ul className="mt-7 grid gap-5 md:grid-cols-3">
+            {goals.map((goal) => {
+              const g = getSummary(goal.href);
+              if (!g) return null;
+              return (
+                <li key={goal.href}>
+                  <Link
+                    href={goal.href}
+                    className="group block overflow-hidden rounded-3xl bg-white shadow-elevation-1 transition-shadow hover:shadow-elevation-2"
+                  >
+                    <GuideCover cover={g.cover} className="aspect-[16/9]" />
+                    <span className="block p-6">
+                      <span className="block font-serif text-[1.35rem] font-semibold leading-snug text-ink-900 group-hover:text-brand-700">
+                        {goal.heading}
+                      </span>
+                      <span className="mt-2 block text-sm text-ink-700">{goal.hint}</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </Container>
+      </section>
+
+      {/* ---------- Start here (the editor's pick) ---------- */}
+      {start && (
+        <section aria-labelledby="start-heading" className="py-12 sm:py-20">
+          <Container className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            <div className="relative">
+              <GuideCover cover={start.cover} className="aspect-[4/3] rounded-[2rem] shadow-elevation-3" />
+              <span
+                aria-hidden="true"
+                className="absolute -right-2 -top-4 flex h-24 w-24 rotate-6 items-center justify-center rounded-full bg-marker-300 text-center font-serif text-base font-semibold leading-tight text-ink-900 shadow-elevation-2 sm:-right-6 sm:h-28 sm:w-28"
+              >
+                Start
+                <br />
+                here
+              </span>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-terracotta-600">New to GPA?</p>
+              <h2 id="start-heading" className="mt-2 font-serif text-3xl font-semibold leading-tight text-ink-900 sm:text-5xl">
+                The method behind every number
+              </h2>
+              <p className="mt-4 max-w-lg text-lg leading-relaxed text-ink-700">{start.description}</p>
+              <ul className="mt-5 space-y-2.5">
+                {start.points.map((point) => (
+                  <li key={point} className="flex gap-3 text-base text-ink-900">
+                    <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-terracotta-500" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href={start.href}
+                className="mt-7 inline-flex rounded-full bg-ink-900 px-7 py-3.5 text-sm font-bold text-white transition-colors hover:bg-brand-700"
+              >
+                Read the guide
+              </Link>
+            </div>
+          </Container>
         </section>
+      )}
+
+      {/* ---------- Quick answers ---------- */}
+      <section aria-labelledby="answers-heading" className="bg-white/60 py-12 sm:py-16">
+        <Container>
+          <h2 id="answers-heading" className="font-serif text-3xl font-semibold text-ink-900 sm:text-4xl">
+            Quick answers
+          </h2>
+          <p className="mt-2 max-w-xl text-ink-700">The questions students ask most, each answered in its guide.</p>
+          <ul className="mt-7 divide-y divide-ink-900/10 overflow-hidden rounded-3xl border border-ink-900/10 bg-white">
+            {answers.map((item) => (
+              <li key={item.question}>
+                <Link
+                  href={`${item.href}#faq-heading`}
+                  className="flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-brand-50 sm:px-7 sm:py-5"
+                >
+                  <span>
+                    <span className="block text-xs font-bold text-terracotta-600">{item.category}</span>
+                    <span className="mt-0.5 block font-serif text-lg font-semibold leading-snug text-ink-900">
+                      {item.question}
+                    </span>
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-ink-900/20 text-ink-900"
+                  >
+                    &rsaquo;
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </section>
+
+      {/* ---------- Closing band ---------- */}
+      <Container className="pb-12 sm:pb-16">
+        <GuideCta />
       </Container>
     </>
   );
